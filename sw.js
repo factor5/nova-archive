@@ -2,8 +2,8 @@
    - Same-origin files: network first (so a new deploy shows up right away), cache as fallback.
    - Firebase SDK + Google Fonts: stale-while-revalidate runtime cache.
    - Firebase Auth helper URLs (/__/...) and Firestore/API traffic are never touched. */
-const VERSION = 'nova-v10';
-const SHELL = ['./', 'index.html', 'css/base.css', 'css/theme-nova.css', 'css/theme-paper.css', 'data.json', 'firebase-config.js', 'manifest.webmanifest',
+const VERSION = 'nova-v11';
+const SHELL = ['./', 'index.html', 'css/base.css', 'css/theme-nova.css', 'css/theme-paper.css', 'js/actions.js', 'js/cards.js', 'js/config.js', 'js/data.js', 'js/main.js', 'js/overlay.js', 'js/state.js', 'js/sync.js', 'js/theme.js', 'js/util.js', 'js/views.js', 'data.json', 'firebase-config.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -21,10 +21,10 @@ self.addEventListener('fetch', e => {
   if (url.origin === self.location.origin) {
     if (url.pathname.startsWith('/__/')) return;              // Firebase Auth / init helpers
     e.respondWith(
-      fetch(req).then(res => {
+      fetch(req, { cache: 'no-cache' }).then(res => {
         if (res.ok) { const copy = res.clone(); caches.open(VERSION).then(c => c.put(req, copy)); }
         return res;
-      }).catch(() => caches.match(req).then(r => r || (req.mode === 'navigate' ? caches.match('index.html') : Response.error())))
+      }).catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || (req.mode === 'navigate' ? caches.match('index.html') : Response.error())))
     );
     return;
   }

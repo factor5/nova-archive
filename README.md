@@ -18,13 +18,17 @@ A personal web app for browsing science-fiction novel awards, tracking what you'
 
 A static site, with no build step and no framework.
 
-| File | Purpose |
+| Path | Purpose |
 |---|---|
-| `index.html` | The whole app: markup, styles and JavaScript |
+| `index.html` | Page markup only |
+| `css/base.css` | Layout and components (colours come from theme tokens) |
+| `css/theme-nova.css`, `css/theme-paper.css` | One file per theme: design tokens and overrides |
+| `js/main.js` | Entry point (ES module): loads data, wires the page, starts sync |
+| `js/*.js` | Modules: `config`, `util`, `state`, `theme`, `sync` (Firebase), `data` (filtering and sorting), `cards`, `overlay`, `views`, `actions` |
 | `data.json` | The award data, one book per line |
 | `firebase-config.js` | Firebase web config (public by design; access is limited by Firestore rules) |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Offline support and installability (PWA) |
-| `tools/` | Source data and the script that generates `data.json` |
+| `tools/` | Source data, the script that generates `data.json`, and the version bump script |
 
 - **Hosting:** GitHub Pages, served from the `main` branch root.
 - **Persistence:** Firebase Authentication (Google sign-in) and Cloud Firestore, one document per user at `users/<uid>`. Without signing in, progress is kept in the browser's local storage only.
@@ -32,7 +36,8 @@ A static site, with no build step and no framework.
 
 ## Updating
 
-- **App changes:** edit `index.html`, commit to `main`, and Pages redeploys in a few minutes. Increase the `VERSION` in `sw.js` so installed copies refresh.
+- **App changes:** edit the files under `css/` or `js/`, run `python3 tools/bump.py` (it raises the version in `sw.js`, the `?v=` URLs and the About page together), commit to `main`, and Pages redeploys in a few minutes. Installed copies refresh on the next open.
+- **New theme:** add `css/theme-<name>.css` overriding the tokens in `theme-nova.css`, link it in `index.html`, and add it to `THEMES` in `js/config.js`.
 - **New award results:** see [`tools/README.md`](tools/README.md). Edit `tools/raw.txt`, run `python3 tools/parse.py`, then commit `raw.txt` and `data.json`.
 - **Book ids are stable.** Read marks, ratings, notes and lists are stored by id, so avoid renaming existing titles or authors in the data.
 
