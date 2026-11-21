@@ -102,11 +102,11 @@ h1{margin:0;font-family:var(--display);font-weight:900;letter-spacing:.14em;font
 .ncard .na{color:var(--muted);font-size:14px}
 .ncard .nd{color:var(--cyan);font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin:0}
 .ncard .ntx{flex:1;min-width:0}
-.ncard .nb{display:flex;gap:5px;margin:0;flex:none}
-.ncard .nb .btn{padding:4px 0;width:32px;min-width:0;justify-content:center}
+.ncard{cursor:pointer}.ncard:hover,.ncard:focus-visible{border-color:var(--cyan);outline:none}
+.ncard .chev{flex:none;color:var(--cyan);font-size:20px;line-height:1}
 .ncard .nt{font-size:14px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .ncard .na{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ncard .nb .has{color:var(--cyan);border-color:var(--cyan)}
+
 .bar{height:6px;width:120px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--mag));width:0;transition:width .4s}
 nav.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:8px 0 18px;flex-wrap:wrap}
@@ -447,6 +447,7 @@ function stateBtns(id){
 }
 function myBits(id){
   const r=S.read.has(id);
+  if(S.reading[id])return `<div class="mine"><button class="btn sm ghost" data-act="note">✎ ${hasNote(id)?'Notes':'Add note'}</button></div>`;
   if(!r)return '';
   return `<div class="mine">${stars(id)}<button class="btn sm ghost" data-act="note">✎ ${hasNote(id)?'Notes':'Add note'}</button></div>`;
 }
@@ -567,7 +568,7 @@ function renderAbout(){
 
 /* ---------- overlay ---------- */
 function openOv(html){const r=$('#ovRoot');r.innerHTML=`<div class="ov" data-act="ovclose"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;const f=r.querySelector('input,button');if(f)f.focus()}
-function closeOv(){$('#ovRoot').innerHTML=''}
+function closeOv(){ui.bookId=null;$('#ovRoot').innerHTML=''}
 function listPicker(ids,title,sub){
   const rows=S.lists.map(l=>{
     const all=ids.every(id=>l.books.includes(id));
@@ -586,7 +587,18 @@ function renderNow(){
   el.hidden=false;
   el.innerHTML=`<div class="nowhead"><span class="pulse"></span>Now reading <small>${ids.length}</small></div><div class="nowrow">${ids.map(id=>{
     const b=BYID.get(id);const d=Math.max(0,Math.floor((Date.now()-S.reading[id])/864e5));
-    return `<div class="ncard" data-id="${esc(id)}"><div class="ntx"><div class="nt">${esc(b.title)}</div><div class="na">${esc(b.author)} · <span class="nd">Day ${d+1}</span></div></div><div class="nb"><button class="btn sm go" data-act="finish" title="Finish" aria-label="Finish reading">✓</button><button class="btn sm ghost${hasNote(id)?' has':''}" data-act="note" title="Notes" aria-label="Notes">✎</button><button class="btn sm ghost" data-act="stop" title="Stop reading" aria-label="Stop reading">✕</button></div></div>`}).join('')}</div>`;
+    return `<div class="ncard" data-id="${esc(id)}" data-act="openbook" role="button" tabindex="0" aria-label="Open ${esc(b.title)}"><div class="ntx"><div class="nt">${esc(b.title)}</div><div class="na">${esc(b.author)} · <span class="nd">Day ${d+1}</span></div></div><span class="chev" aria-hidden="true">${hasNote(id)?'✎ ':''}›</span></div>`}).join('')}</div>`;
+}
+function bookOv(id){
+  const b=BYID.get(id);if(!b)return;
+  ui.bookId=id;
+  openOv(`<div class="bookpv" style="--x:0"><div class="grid" style="grid-template-columns:1fr">${card(b)}</div><div style="margin-top:12px;display:flex;justify-content:flex-end"><button class="btn sm ghost" data-act="ovclose2">Close</button></div></div>`);
+  const f=$('#ovRoot .modal button');if(f)f.blur();
+}
+function refreshBookOv(){
+  if(!ui.bookId||!$('#ovRoot .bookpv'))return;
+  const b=BYID.get(ui.bookId);if(!b)return;
+  $('#ovRoot .bookpv .grid').innerHTML=card(b);
 }
 function reviewOv(id){
   const b=BYID.get(id);if(!b)return;
@@ -599,7 +611,7 @@ function reviewOv(id){
 }
 function setMeta(id,k,v){const m=S.meta[id]||(S.meta[id]={});if(v===''||v===0||v==null)delete m[k];else m[k]=v;if(!Object.keys(m).length)delete S.meta[id]}
 function renderAll(){
-  renderNow();
+  renderNow();refreshBookOv();
   $('#hudRead').textContent=S.read.size;$('#hudTotal').textContent=BOOKS.length;
   $('#hudBar').style.width=(BOOKS.length?S.read.size/BOOKS.length*100:0)+'%';
   $('#listCount').textContent=S.lists.length?'('+S.lists.length+')':'';
@@ -628,6 +640,7 @@ document.addEventListener('click',ev=>{
   const cur=S.lists.find(l=>l.id===ui.listId);
   if(act==='ovclose'){if(ev.target===t)closeOv();return}
   if(act==='ovclose2'){closeOv();renderAll();return}
+  if(act==='openbook'){bookOv(id);return}
   if(act==='read'){toggleRead(id);renderAll();return}
   if(act==='start'){if(S.read.has(id))S.read.delete(id);S.reading[id]=Date.now();touch();renderAll();toast('Started reading');return}
   if(act==='stop'){delete S.reading[id];touch();renderAll();return}
@@ -637,7 +650,7 @@ document.addEventListener('click',ev=>{
     renderAll();return}
   if(act==='note'){reviewOv(id);return}
   if(act==='notesave'){const tx=$('#noteTxt');if(tx){setMeta(id,'n',tx.value.trim());touch()}closeOv();renderAll();toast('Saved');return}
-  if(act==='author'){ui.author=v;ui.limit=PAGE;if(ui.tab!=='library'){location.hash='#library'}else renderResults();window.scrollTo({top:0,behavior:'smooth'});return}
+  if(act==='author'){closeOv();ui.author=v;ui.limit=PAGE;if(ui.tab!=='library'){location.hash='#library'}else renderResults();window.scrollTo({top:0,behavior:'smooth'});return}
   if(act==='clearauthor'){ui.author='';renderResults();return}
   if(act==='more'){ui.limit+=PAGE;renderResults();return}
   if(act==='reset'){Object.assign(ui,{q:'',result:'all',read:'all',decade:'',sort:'best',group:'none',limit:PAGE,author:''});ui.awards.clear();$('#app').innerHTML='';renderAll();return}
@@ -660,7 +673,7 @@ document.addEventListener('click',ev=>{
     else{const j=act==='up'?i-1:i+1;if(j<0||j>=cur.books.length)return;[cur.books[i],cur.books[j]]=[cur.books[j],cur.books[i]]}
     touch();renderAll();return}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOv()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOv();if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('ncard')){e.preventDefault();bookOv(e.target.dataset.id)}});
 window.addEventListener('hashchange',route);
 
 /* ---------- boot ---------- */
