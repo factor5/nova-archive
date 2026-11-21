@@ -2,8 +2,8 @@
    - Same-origin files: network first (so a new deploy shows up right away), cache as fallback.
    - Firebase SDK + Google Fonts: stale-while-revalidate runtime cache.
    - Firebase Auth helper URLs (/__/...) and Firestore/API traffic are never touched. */
-const VERSION = 'nova-v9';
-const SHELL = ['./', 'index.html', 'data.json', 'firebase-config.js', 'manifest.webmanifest',
+const VERSION = 'nova-v10';
+const SHELL = ['./', 'index.html', 'css/base.css', 'css/theme-nova.css', 'css/theme-paper.css', 'data.json', 'firebase-config.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

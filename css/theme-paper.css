@@ -1,0 +1,18 @@
+/* Paper (light) theme: active when <html data-theme="paper">. */
+:root[data-theme=paper]{
+  --bg:#f3eee1; --bg2:#fbf8ef; --panel:rgba(255,252,243,.92); --panel2:rgba(250,244,230,.95);
+  --line:rgba(90,70,40,.22); --line2:rgba(90,70,40,.45);
+  --cyan:#0f6b73; --mag:#a3324f; --amber:#b7791f; --green:#2f7d4f;
+  --text:#2b2418; --muted:#6a5e49; --danger:#b3261e;
+  --acc:15,107,115; --accl:90,70,40; --magrgb:163,50,79; --field:#fffdf6; --surf:255,255,255; --neutral:0,0,0; --ink2:#4a3f2e;
+  --scrim:rgba(40,30,15,.55); --onbtn:#12301f; --bmixc:#000; --bwbase:#fbf8ef; --bwink:#2b2418;
+  --display:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif; --body:Charter,'Iowan Old Style',Georgia,serif;
+  color-scheme:light}
+:root[data-theme=paper] body{background-image:linear-gradient(rgba(90,70,40,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(90,70,40,.035) 1px,transparent 1px);background-size:44px 44px,44px 44px}
+:root[data-theme=paper] .stars{display:none}
+:root[data-theme=paper] *{text-shadow:none!important}
+:root[data-theme=paper] .logo,:root[data-theme=paper] .logo:before,:root[data-theme=paper] .logo:after,:root[data-theme=paper] .pulse,:root[data-theme=paper] #sync .orb{box-shadow:none;filter:none}
+:root[data-theme=paper] h1{letter-spacing:.08em}
+:root[data-theme=paper] .card:hover{box-shadow:0 6px 18px rgba(60,40,10,.15)}
+:root[data-theme=paper] .rate .st.on{color:var(--amber)}
+:root[data-theme=paper] .dot,:root[data-theme=paper] .pill i{box-shadow:none}

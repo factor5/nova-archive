@@ -1,0 +1,9 @@
+/* Nova (dark) theme: the default design tokens. Other themes override these in css/theme-<name>.css. */
+:root{
+  --bg:#04060d; --bg2:#0a1024; --panel:rgba(11,18,40,.78); --panel2:rgba(18,28,60,.85);
+  --line:rgba(70,190,255,.22); --line2:rgba(70,190,255,.5);
+  --cyan:#3be8ff; --mag:#ff4bd8; --amber:#ffc53d; --green:#5dffb0;
+  --text:#dce8ff; --muted:#93a8d0; --danger:#ff6b81;
+  --acc:59,232,255; --accl:70,190,255; --magrgb:255,75,216; --field:#070c1c; --surf:7,12,28; --neutral:255,255,255; --ink2:#c4d4f3; --scrim:rgba(2,4,10,.78); --onbtn:#eafff5; --bmixc:#fff; --bwbase:#0b1226; --bwink:#fff;
+  --display:'Orbitron','Exo 2',system-ui,sans-serif; --body:'Exo 2',system-ui,sans-serif;
+}
