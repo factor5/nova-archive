@@ -97,7 +97,7 @@ h1{margin:0;font-family:var(--display);font-weight:900;letter-spacing:.14em;font
 @keyframes pulse{50%{opacity:.35;transform:scale(.7)}}
 @media (prefers-reduced-motion:reduce){.pulse{animation:none}}
 .nowrow{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scroll-snap-type:x proximity}
-.ncard{flex:0 0 min(300px,86%);flex-direction:row!important;align-items:center;gap:10px!important;scroll-snap-align:start;background:rgba(7,12,28,.7);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:3px}
+.ncard{flex:0 0 min(300px,78%);flex-direction:row!important;align-items:center;gap:10px!important;scroll-snap-align:start;background:rgba(7,12,28,.7);border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:3px}
 .ncard .nt{font-weight:700;color:var(--text)}
 .ncard .na{color:var(--muted);font-size:14px}
 .ncard .nd{color:var(--cyan);font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin:0}
@@ -107,6 +107,8 @@ h1{margin:0;font-family:var(--display);font-weight:900;letter-spacing:.14em;font
 .ncard .nt{font-size:14px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .ncard .na{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+#toTop{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));z-index:55;width:46px;height:46px;border-radius:50%;border:1px solid var(--cyan);background:rgba(7,12,28,.88);color:var(--cyan);font-size:22px;line-height:1;cursor:pointer;box-shadow:0 0 18px rgba(59,232,255,.35);display:flex;align-items:center;justify-content:center}
+#toTop[hidden]{display:none}
 .bar{height:6px;width:120px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--mag));width:0;transition:width .4s}
 nav.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:8px 0 18px;flex-wrap:wrap}
@@ -228,6 +230,7 @@ input:focus,select:focus,button:focus-visible,a:focus-visible{outline:2px solid 
   <main id="app" aria-live="polite"></main>
 </div>
 <div id="ovRoot"></div>
+<button type="button" id="toTop" aria-label="Back to top" title="Back to top" hidden>↑</button>
 <div id="toastRoot" role="status"></div>
 
 <script src="firebase-config.js"></script>
@@ -582,10 +585,10 @@ let pickIds=[];
 
 /* ---------- actions ---------- */
 function renderNow(){
-  const el=$('#nowReading');const ids=Object.keys(S.reading).filter(id=>BYID.has(id)).sort((a,b)=>S.reading[b]-S.reading[a]);
+  const el=$('#nowReading');const ids=Object.keys(S.reading).filter(id=>BYID.has(id)).sort((a,b)=>S.reading[a]-S.reading[b]);
   if(!ids.length){el.hidden=true;el.innerHTML='';return}
   el.hidden=false;
-  el.innerHTML=`<div class="nowhead"><span class="pulse"></span>Now reading <small>${ids.length}</small></div><div class="nowrow">${ids.map(id=>{
+  el.innerHTML=`<div class="nowhead"><span class="pulse"></span>Now reading <small>${ids.length}${ids.length>1?' · swipe →':''}</small></div><div class="nowrow">${ids.map(id=>{
     const b=BYID.get(id);const d=Math.max(0,Math.floor((Date.now()-S.reading[id])/864e5));
     return `<div class="ncard" data-id="${esc(id)}" data-act="openbook" role="button" tabindex="0" aria-label="Open ${esc(b.title)}"><div class="ntx"><div class="nt">${esc(b.title)}</div><div class="na">${esc(b.author)} · <span class="nd">Day ${d+1}</span></div></div><span class="chev" aria-hidden="true">${hasNote(id)?'✎ ':''}›</span></div>`}).join('')}</div>`;
 }
@@ -675,6 +678,11 @@ document.addEventListener('click',ev=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOv();if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('ncard')){e.preventDefault();bookOv(e.target.dataset.id)}});
 window.addEventListener('hashchange',route);
+(function(){const b=$('#toTop');let t=0;
+  const upd=()=>{t=0;b.hidden=window.scrollY<500};
+  window.addEventListener('scroll',()=>{if(!t)t=requestAnimationFrame(upd)},{passive:true});
+  b.addEventListener('click',()=>window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'}));
+  upd()})();
 
 /* ---------- boot ---------- */
 (async function(){
