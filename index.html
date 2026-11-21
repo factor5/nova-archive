@@ -81,6 +81,27 @@ h1{margin:0;font-family:var(--display);font-weight:900;letter-spacing:.14em;font
   .hud .chip:first-child .bar{flex:1;width:auto;min-width:24px}
   #authBtn{padding:8px 10px}
 }
+
+.mine{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rate{display:inline-flex;gap:0}
+.rate .st{background:none;border:0;padding:2px 3px;font-size:20px;line-height:1;color:rgba(255,255,255,.22);cursor:pointer;font-family:inherit}
+.rate.big .st{font-size:30px;padding:2px 5px}
+.rate .st.on{color:var(--amber);text-shadow:0 0 10px var(--amber)}
+.btn.go{border-color:var(--green);color:var(--green)}
+.card.is-reading{border-color:var(--cyan);box-shadow:0 0 18px rgba(59,232,255,.22)}
+.now{margin:6px 0 4px;padding:12px 14px;border:1px solid var(--cyan);border-radius:14px;background:linear-gradient(135deg,rgba(59,232,255,.10),rgba(255,75,216,.08));box-shadow:0 0 22px rgba(59,232,255,.22),inset 0 0 24px rgba(59,232,255,.05)}
+.now[hidden]{display:none}
+.nowhead{display:flex;align-items:center;gap:9px;font-family:var(--display);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px}
+.nowhead small{color:var(--muted);letter-spacing:.05em}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35;transform:scale(.7)}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}}
+.nowrow{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;scroll-snap-type:x proximity}
+.ncard{flex:0 0 min(300px,82%);scroll-snap-align:start;background:rgba(7,12,28,.7);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:3px}
+.ncard .nt{font-weight:700;color:var(--text)}
+.ncard .na{color:var(--muted);font-size:14px}
+.ncard .nd{color:var(--cyan);font-size:12px;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+.ncard .nb{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .bar{height:6px;width:120px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--mag));width:0;transition:width .4s}
 nav.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:8px 0 18px;flex-wrap:wrap}
@@ -193,6 +214,7 @@ input:focus,select:focus,button:focus-visible,a:focus-visible{outline:2px solid 
       <button class="btn sm" id="authBtn" hidden></button>
     </div>
   </header>
+  <section id="nowReading" class="now" aria-label="Currently reading" hidden></section>
   <nav class="tabs" aria-label="Sections">
     <a href="#library" data-tab="library">Library</a>
     <a href="#lists" data-tab="lists">My Lists <span id="listCount"></span></a>
@@ -230,10 +252,10 @@ function surname(a){const p=a.replace(/\s*&.*$/,'').replace(/ and .*$/,'').split
 
 /* ---------- state ---------- */
 let BOOKS=[],BYID=new Map();
-const S={read:new Set(),lists:[],updatedAt:0};
+const S={read:new Set(),lists:[],reading:{},meta:{},updatedAt:0};
 const ui={tab:'library',q:'',awards:new Set(),result:'all',read:'all',decade:'',sort:'best',group:'none',limit:PAGE,listId:null,author:'',lsort:'manual'};
-const serialize=()=>({v:1,read:[...S.read],lists:S.lists,updatedAt:S.updatedAt});
-function loadFrom(o){S.read=new Set(Array.isArray(o.read)?o.read:[]);S.lists=Array.isArray(o.lists)?o.lists:[];S.updatedAt=o.updatedAt||0}
+const serialize=()=>({v:2,read:[...S.read],lists:S.lists,reading:S.reading,meta:S.meta,updatedAt:S.updatedAt});
+function loadFrom(o){S.read=new Set(Array.isArray(o.read)?o.read:[]);S.lists=Array.isArray(o.lists)?o.lists:[];S.reading=(o.reading&&typeof o.reading==='object'&&!Array.isArray(o.reading))?o.reading:{};S.meta=(o.meta&&typeof o.meta==='object'&&!Array.isArray(o.meta))?o.meta:{};S.updatedAt=o.updatedAt||0}
 try{const raw=localStorage.getItem(LS);if(raw)loadFrom(JSON.parse(raw))}catch(e){}
 
 /* ---------- persistence: Firebase (Google sign-in + Firestore), localStorage as local copy ---------- */
@@ -297,7 +319,7 @@ async function onUser(u){
       const x=snap.data();
       if((x.updatedAt||0)>=S.updatedAt){loadFrom(x);try{localStorage.setItem(LS,JSON.stringify(serialize()))}catch(e){}}
       else{dirty=true}
-    }else if(S.read.size||S.lists.length){dirty=true}
+    }else if(S.read.size||S.lists.length||Object.keys(S.reading).length||Object.keys(S.meta).length){dirty=true}
     setSync('synced');renderAll();
     if(dirty){setSync('saving');flush()}
     unsub=F.onSnapshot(d,s=>{
@@ -347,6 +369,8 @@ function visible(){
     const r=S.read.has(b.id);
     if(ui.read==='read'&&!r)return false;
     if(ui.read==='unread'&&r)return false;
+    if(ui.read==='reading'&&!S.reading[b.id])return false;
+    if(ui.read==='rated'&&!rating(b.id))return false;
     return b.entries.some(matchEntry);
   });
 }
@@ -357,7 +381,8 @@ function sortBooks(arr){
     oldest:(a,b)=>a.first-b.first||a.title.localeCompare(b.title),
     title:(a,b)=>a.title.localeCompare(b.title),
     author:(a,b)=>a._s.localeCompare(b._s)||a.title.localeCompare(b.title),
-    wins:(a,b)=>b.wins-a.wins||b.noms-a.noms
+    wins:(a,b)=>b.wins-a.wins||b.noms-a.noms,
+    rating:(a,b)=>rating(b.id)-rating(a.id)||(b.wins*3+b.noms)-(a.wins*3+a.noms)
   }[ui.sort];
   return arr.slice().sort(f);
 }
@@ -403,17 +428,35 @@ function linkRow(b){
     <div class="lr"><span class="lkh">Author</span>${L(wiki(b.author+' author'),'Wikipedia','Search Wikipedia for this author')}${L('https://www.isfdb.org/cgi-bin/se.cgi?type=Name&arg='+encodeURIComponent(b.author),'ISFDB','Search the Internet Speculative Fiction Database for this author')}</div>
   </div>`;
 }
+const rating=id=>(S.meta[id]&&S.meta[id].r)||0;
+const hasNote=id=>!!(S.meta[id]&&S.meta[id].n);
+function stars(id,big){
+  const r=rating(id);
+  return `<span class="rate ${big?'big':''}" role="group" aria-label="Your rating">${[1,2,3,4,5].map(n=>`<button type="button" class="st ${n<=r?'on':''}" data-act="star" data-v="${n}" aria-label="${n} star${n>1?'s':''}" aria-pressed="${n<=r}">★</button>`).join('')}</span>`;
+}
+function stateBtns(id){
+  const r=S.read.has(id),g=!!S.reading[id];
+  if(g)return `<button class="btn sm go" data-act="finish">✓ Finish</button><button class="btn sm ghost" data-act="stop" title="Stop reading (not finished)">Stop</button>`;
+  if(r)return `<button class="btn sm on" data-act="read" aria-pressed="true">✓ Read</button>`;
+  return `<button class="btn sm" data-act="read" aria-pressed="false">Mark read</button><button class="btn sm ghost" data-act="start">▶ Start</button>`;
+}
+function myBits(id){
+  const r=S.read.has(id);
+  if(!r)return '';
+  return `<div class="mine">${stars(id)}<button class="btn sm ghost" data-act="note">✎ ${hasNote(id)?'Notes':'Add note'}</button></div>`;
+}
 function card(b){
   const r=S.read.has(b.id);
   const hasWin=b.wins>0;
   const inLists=S.lists.filter(l=>l.books.includes(b.id)).length;
-  return `<article class="card ${hasWin?'win':''} ${r?'is-read':''}" data-id="${esc(b.id)}">
+  return `<article class="card ${hasWin?'win':''} ${r?'is-read':''} ${S.reading[b.id]?'is-reading':''}" data-id="${esc(b.id)}">
     <h3>${esc(b.title)}</h3>
     <button class="author" data-act="author" data-v="${esc(b.author)}" title="Show all books by this author">${esc(b.author)}</button>
     <div class="badges">${b.entries.map(badge).join('')}</div>
     ${linkRow(b)}
+    ${myBits(b.id)}
     <div class="acts">
-      <button class="btn sm ${r?'on':''}" data-act="read" aria-pressed="${r}">${r?'✓ Read':'Mark read'}</button>
+      ${stateBtns(b.id)}
       <button class="btn sm ghost" data-act="addlist">＋ List${inLists?' ('+inLists+')':''}</button>
     </div></article>`;
 }
@@ -425,10 +468,10 @@ function shellLibrary(){
     <div class="row">
       <label class="f">Search<input type="text" id="q" placeholder="Title or author…" value="${esc(ui.q)}"></label>
       <label class="f">Show<select id="result"><option value="all">Winners &amp; finalists</option><option value="winner">Winners only</option></select></label>
-      <label class="f">Status<select id="read"><option value="all">All books</option><option value="unread">Not read yet</option><option value="read">Already read</option></select></label>
+      <label class="f">Status<select id="read"><option value="all">All books</option><option value="unread">Not read yet</option><option value="reading">Reading now</option><option value="read">Already read</option><option value="rated">Rated by me</option></select></label>
       <label class="f">Decade<select id="decade"><option value="">All years</option>${decades().map(d=>`<option value="${d}">${d}s</option>`).join('')}</select></label>
       <label class="f">Group by<select id="group"><option value="none">No grouping</option><option value="year">Year</option><option value="decade">Decade</option><option value="award">Award</option><option value="author">Author</option></select></label>
-      <label class="f">Sort<select id="sort"><option value="best">Most honoured</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="title">Title A–Z</option><option value="author">Author A–Z</option><option value="wins">Most wins</option></select></label>
+      <label class="f">Sort<select id="sort"><option value="best">Most honoured</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="title">Title A–Z</option><option value="author">Author A–Z</option><option value="wins">Most wins</option><option value="rating">My rating</option></select></label>
     </div>
     <div><div class="f" style="margin-bottom:6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Award <span style="text-transform:none;letter-spacing:0">(none selected = all)</span></div>
       <div class="pills" id="awardPills">${AWARDS.map(a=>`<button class="pill" data-aw="${esc(a.key)}" style="--c:${a.color}" aria-pressed="false"><i></i>${esc(a.short)}</button>`).join('')}</div></div>
@@ -483,7 +526,7 @@ function renderLists(){
         <label style="margin-left:auto;display:flex;align-items:center;gap:6px">Sort <select id="lsort" aria-label="Sort list"><option value="manual">My order</option><option value="title">Title A–Z</option><option value="author">Author A–Z</option><option value="oldest">Oldest first</option><option value="newest">Newest first</option><option value="unread">Unread first</option></select></label></div>
       ${books.length?`<div class="items">${books.map((b,i)=>`<div class="item ${S.read.has(b.id)?'is-read':''}" data-id="${esc(b.id)}">
         <div class="n">${i+1}</div><div><div class="t">${esc(b.title)}</div><div class="a">${esc(b.author)}</div><div class="badges" style="margin-top:4px">${b.entries.filter(e=>e.result==='winner').slice(0,4).map(badge).join('')}</div><div style="margin-top:6px">${linkRow(b)}</div></div>
-        <div class="ib"><button class="btn sm ${S.read.has(b.id)?'on':''}" data-act="read" aria-pressed="${S.read.has(b.id)}">${S.read.has(b.id)?'✓ Read':'Mark read'}</button>
+        <div class="ib">${stateBtns(b.id)}${S.read.has(b.id)?stars(b.id)+`<button class="btn sm ghost" data-act="note">✎</button>`:''}
         ${manual?`<button class="btn sm ghost" data-act="up" aria-label="Move up">↑</button><button class="btn sm ghost" data-act="down" aria-label="Move down">↓</button>`:''}<button class="btn sm ghost warn" data-act="rm" aria-label="Remove from list">✕</button></div></div>`).join('')}</div>`
       :`<div class="empty"><h3>This list is empty</h3><p>Go to the Library and use “＋ List” on any book, or “Add all results to a list”.</p><a class="btn" href="#library">Open Library</a></div>`}
     </section>`;
@@ -532,7 +575,26 @@ function listPicker(ids,title,sub){
 let pickIds=[];
 
 /* ---------- actions ---------- */
+function renderNow(){
+  const el=$('#nowReading');const ids=Object.keys(S.reading).filter(id=>BYID.has(id)).sort((a,b)=>S.reading[b]-S.reading[a]);
+  if(!ids.length){el.hidden=true;el.innerHTML='';return}
+  el.hidden=false;
+  el.innerHTML=`<div class="nowhead"><span class="pulse"></span>Now reading <small>${ids.length}</small></div><div class="nowrow">${ids.map(id=>{
+    const b=BYID.get(id);const d=Math.max(0,Math.floor((Date.now()-S.reading[id])/864e5));
+    return `<div class="ncard" data-id="${esc(id)}"><div class="nt">${esc(b.title)}</div><div class="na">${esc(b.author)}</div><div class="nd">${d?`Day ${d+1}`:'Started today'}${hasNote(id)?' · ✎ notes':''}</div><div class="nb"><button class="btn sm go" data-act="finish">✓ Finish</button><button class="btn sm ghost" data-act="note">✎ Note</button><button class="btn sm ghost" data-act="stop">Stop</button></div></div>`}).join('')}</div>`;
+}
+function reviewOv(id){
+  const b=BYID.get(id);if(!b)return;
+  const m=S.meta[id]||{};
+  openOv(`<div data-id="${esc(id)}"><h3>${esc(b.title)}</h3><p>${esc(b.author)}</p>
+    <div style="margin:6px 0 12px">${stars(id,true)}</div>
+    <label class="f">My notes<textarea id="noteTxt" maxlength="2000" rows="6" placeholder="Thoughts, favourite quotes, who recommended it…" style="width:100%;background:#070c1c;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit">${esc(m.n||'')}</textarea></label>
+    <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end"><button class="btn sm" data-act="notesave">Save</button></div></div>`);
+  const t=$('#noteTxt');if(t)t.focus();
+}
+function setMeta(id,k,v){const m=S.meta[id]||(S.meta[id]={});if(v===''||v===0||v==null)delete m[k];else m[k]=v;if(!Object.keys(m).length)delete S.meta[id]}
 function renderAll(){
+  renderNow();
   $('#hudRead').textContent=S.read.size;$('#hudTotal').textContent=BOOKS.length;
   $('#hudBar').style.width=(BOOKS.length?S.read.size/BOOKS.length*100:0)+'%';
   $('#listCount').textContent=S.lists.length?'('+S.lists.length+')':'';
@@ -547,7 +609,7 @@ function route(){
   if(t!==ui.tab||!$('#app').children.length){ui.tab=t;$('#app').innerHTML='';}
   renderAll();
 }
-function toggleRead(id){S.read.has(id)?S.read.delete(id):S.read.add(id);touch()}
+function toggleRead(id){if(S.read.has(id))S.read.delete(id);else{S.read.add(id);delete S.reading[id]}touch()}
 function newList(name,ids){
   name=name.trim();if(!name)return null;
   const l={id:uid(),name,created:Date.now(),books:[...new Set(ids||[])]};S.lists.push(l);touch();return l;
@@ -562,6 +624,14 @@ document.addEventListener('click',ev=>{
   if(act==='ovclose'){if(ev.target===t)closeOv();return}
   if(act==='ovclose2'){closeOv();renderAll();return}
   if(act==='read'){toggleRead(id);renderAll();return}
+  if(act==='start'){if(S.read.has(id))S.read.delete(id);S.reading[id]=Date.now();touch();renderAll();toast('Started reading');return}
+  if(act==='stop'){delete S.reading[id];touch();renderAll();return}
+  if(act==='finish'){delete S.reading[id];S.read.add(id);setMeta(id,'f',Date.now());touch();closeOv();renderAll();reviewOv(id);return}
+  if(act==='star'){const n=+v;setMeta(id,'r',rating(id)===n?0:n);touch();
+    if(t.closest('.modal')){const w=t.closest('.rate');w.outerHTML=stars(id,true);const f=$('.modal .rate .st');}
+    renderAll();return}
+  if(act==='note'){reviewOv(id);return}
+  if(act==='notesave'){const tx=$('#noteTxt');if(tx){setMeta(id,'n',tx.value.trim());touch()}closeOv();renderAll();toast('Saved');return}
   if(act==='author'){ui.author=v;ui.limit=PAGE;if(ui.tab!=='library'){location.hash='#library'}else renderResults();window.scrollTo({top:0,behavior:'smooth'});return}
   if(act==='clearauthor'){ui.author='';renderResults();return}
   if(act==='more'){ui.limit+=PAGE;renderResults();return}
