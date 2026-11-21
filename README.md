@@ -10,6 +10,7 @@ A personal web app for browsing science-fiction novel awards, tracking what you'
 - Browse and filter by year, decade, award, author, winners only, or read status. Group and sort the results.
 - Mark books as read, start reading them (shown in a "Now reading" row), rate them 1–5 stars and keep private notes.
 - Build reading lists, reorder or sort them, and copy them as text.
+- A page for every book (tap its title): all awards, your rating, notes and finish date, other books by the author, and the books it competed against.
 - Links to Wikipedia, Goodreads and ISFDB for every book and author.
 - Four themes (Nova dark, Paper light, Terminal, Dune) plus Auto, which follows the phone's light or dark setting.
 - Works offline once opened. Sign in with Google to sync your progress across devices.
@@ -24,7 +25,7 @@ A static site, with no build step and no framework.
 | `css/base.css` | Layout and components (colours come from theme tokens) |
 | `css/theme-*.css` | One file per theme (Nova, Paper, Terminal, Dune): design tokens and overrides |
 | `js/main.js` | Entry point (ES module): loads data, wires the page, starts sync |
-| `js/*.js` | Modules: `config`, `util`, `state`, `theme`, `sync` (Firebase), `data` (filtering and sorting), `cards`, `overlay`, `views`, `actions` |
+| `js/*.js` | Modules: `config`, `util`, `state`, `theme`, `sync` (Firebase), `data` (filtering and sorting), `cards`, `overlay`, `views`, `bookpage`, `actions` |
 | `data.json` | The award data, one book per line |
 | `firebase-config.js` | Firebase web config (public by design; access is limited by Firestore rules) |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Offline support and installability (PWA) |

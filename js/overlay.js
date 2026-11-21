@@ -18,7 +18,7 @@ export function listPicker(ids,title,sub){
 export function bookOv(id){
   const b=BYID.get(id);if(!b)return;
   ui.bookId=id;
-  openOv(`<div class="bookpv" style="--x:0"><div class="grid" style="grid-template-columns:1fr">${card(b)}</div><div style="margin-top:12px;display:flex;justify-content:flex-end"><button class="btn sm ghost" data-act="ovclose2">Close</button></div></div>`);
+  openOv(`<div class="bookpv" data-id="${esc(id)}"><div style="margin-bottom:10px;text-align:right"><a class="btn sm" href="#book/${esc(encodeURIComponent(id))}" data-act="gobook" data-v="${esc(id)}">Open full page ›</a></div><div class="grid" style="grid-template-columns:1fr">${card(b)}</div><div style="margin-top:12px;display:flex;justify-content:flex-end"><button class="btn sm ghost" data-act="ovclose2">Close</button></div></div>`);
   const f=$('#ovRoot .modal button');if(f)f.blur();
 }
 export function refreshBookOv(){

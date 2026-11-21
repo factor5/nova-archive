@@ -7,6 +7,7 @@ A scratchpad for features to add later. Move items to "Done" when they ship.
 - Read marks, reading lists, list sorting
 - Now reading row, star ratings, notes
 - Back-to-top button
+- Per-book page (awards, your shelf, author's other books, same-year competitors)
 - Themes: Nova (dark), Paper (light), Terminal, Dune and Auto, with a theme picker (synced with your account)
 
 ## Themes
@@ -23,7 +24,7 @@ A scratchpad for features to add later. Move items to "Done" when they ship.
 - **Covers**: cover images from Open Library, loaded lazily, with a text fallback offline
 - **More like this**: suggestions based on awards, era or author
 - **Series info**: group books by series and show what to read next
-- **Per-book page**: larger view with all awards, notes, links and history
+- **Per-book page, stage 2**: cover and description from an outside source, series info, re-read history
 - **Read-next picker**: choose from your lists, not only from the current filters
 
 ## Practical

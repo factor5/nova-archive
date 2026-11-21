@@ -22,6 +22,9 @@ document.addEventListener('click',ev=>{
   const host=t.closest('[data-id]');const id=host&&host.dataset.id;
   const cur=S.lists.find(l=>l.id===ui.listId);
   if(act==='ovclose'){if(ev.target===t)closeOv();return}
+  if(act==='gobook'){ev.preventDefault();closeOv();location.hash='#book/'+encodeURIComponent(v||id);return}
+  if(act==='back'){ev.preventDefault();if(history.length>1)history.back();else location.hash='#library';return}
+  if(act==='gotolist'){ui.listId=v;location.hash='#lists';return}
   if(act==='settheme'){setTheme(v);themePicker();return}
   if(act==='ovclose2'){closeOv();renderAll();return}
   if(act==='openbook'){bookOv(id);return}

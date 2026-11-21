@@ -35,7 +35,7 @@ export function card(b){
   const hasWin=b.wins>0;
   const inLists=S.lists.filter(l=>l.books.includes(b.id)).length;
   return `<article class="card ${hasWin?'win':''} ${r?'is-read':''} ${S.reading[b.id]?'is-reading':''}" data-id="${esc(b.id)}">
-    <h3>${esc(b.title)}</h3>
+    <h3><a class="bl" href="#book/${esc(encodeURIComponent(b.id))}" data-act="gobook" data-v="${esc(b.id)}">${esc(b.title)}</a></h3>
     <button class="author" data-act="author" data-v="${esc(b.author)}" title="Show all books by this author">${esc(b.author)}</button>
     <div class="badges">${b.entries.map(badge).join('')}</div>
     ${linkRow(b)}

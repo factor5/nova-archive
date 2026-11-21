@@ -1,4 +1,5 @@
 /* Page views: library, lists, about, now-reading row. */
+import {renderBookPage} from './bookpage.js';
 import {AWARDS,PAGE} from './config.js';
 import {$,esc,surname} from './util.js';
 import {S,hasNote,rating,ui} from './state.js';
@@ -71,7 +72,7 @@ export function renderLists(){
       <div style="display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px"><span><b style="color:var(--text)">${done}</b> of ${books.length} read</span><span class="bar" style="width:160px"><i style="width:${books.length?done/books.length*100:0}%"></i></span>
         <label style="margin-left:auto;display:flex;align-items:center;gap:6px">Sort <select id="lsort" aria-label="Sort list"><option value="manual">My order</option><option value="title">Title A–Z</option><option value="author">Author A–Z</option><option value="oldest">Oldest first</option><option value="newest">Newest first</option><option value="unread">Unread first</option></select></label></div>
       ${books.length?`<div class="items">${books.map((b,i)=>`<div class="item ${S.read.has(b.id)?'is-read':''}" data-id="${esc(b.id)}">
-        <div class="n">${i+1}</div><div><div class="t">${esc(b.title)}</div><div class="a">${esc(b.author)}</div><div class="badges" style="margin-top:4px">${b.entries.filter(e=>e.result==='winner').slice(0,4).map(badge).join('')}</div><div style="margin-top:6px">${linkRow(b)}</div></div>
+        <div class="n">${i+1}</div><div><div class="t"><a class="bl" href="#book/${esc(encodeURIComponent(b.id))}" data-act="gobook" data-v="${esc(b.id)}">${esc(b.title)}</a></div><div class="a">${esc(b.author)}</div><div class="badges" style="margin-top:4px">${b.entries.filter(e=>e.result==='winner').slice(0,4).map(badge).join('')}</div><div style="margin-top:6px">${linkRow(b)}</div></div>
         <div class="ib">${stateBtns(b.id)}${S.read.has(b.id)?stars(b.id)+`<button class="btn sm ghost" data-act="note">✎</button>`:''}
         ${manual?`<button class="btn sm ghost" data-act="up" aria-label="Move up">↑</button><button class="btn sm ghost" data-act="down" aria-label="Move down">↓</button>`:''}<button class="btn sm ghost warn" data-act="rm" aria-label="Remove from list">✕</button></div></div>`).join('')}</div>`
       :`<div class="empty"><h3>This list is empty</h3><p>Go to the Library and use “＋ List” on any book, or “Add all results to a list”.</p><a class="btn" href="#library">Open Library</a></div>`}
@@ -122,11 +123,14 @@ export function renderAll(){
   document.querySelectorAll('nav.tabs a').forEach(a=>a.classList.toggle('on',a.dataset.tab===ui.tab));
   if(ui.tab==='library'){if(!$('#results'))shellLibrary();renderResults()}
   else if(ui.tab==='lists')renderLists();
+  else if(ui.tab==='book')renderBookPage();
   else renderAbout();
 }
 export function route(){
   const h=(location.hash||'#library').slice(1);
-  const t=['library','lists','about'].includes(h)?h:'library';
-  if(t!==ui.tab||!$('#app').children.length){ui.tab=t;$('#app').innerHTML='';}
+  const bm=h.match(/^book\/(.+)$/);
+  const t=bm?'book':(['library','lists','about'].includes(h)?h:'library');
+  const page=bm?decodeURIComponent(bm[1]):null;
+  if(t!==ui.tab||page!==ui.page||!$('#app').children.length){ui.tab=t;ui.page=page;$('#app').innerHTML='';if(t==='book')window.scrollTo(0,0)}
   renderAll();
 }
