@@ -171,6 +171,7 @@ input:focus,select:focus,button:focus-visible,a:focus-visible{outline:2px solid 
 .modal h3{margin:0 0 4px;font-family:var(--display);letter-spacing:.08em;color:var(--cyan);font-size:17px}
 .modal p{margin:0 0 12px;color:var(--muted);font-size:14px}
 .mrow{display:flex;gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;cursor:pointer;width:100%;background:transparent;color:var(--text);font:inherit;text-align:left}
+.mrow .sw{width:16px;height:16px;border-radius:50%;flex:none;box-shadow:0 0 0 1px var(--line2)}
 .mrow:hover{border-color:var(--line2)}
 .mrow .ck{width:20px;height:20px;border:1.5px solid var(--line2);border-radius:5px;display:grid;place-items:center;font-size:13px;color:var(--bg);flex:none}
 .mrow.on .ck{background:var(--green);border-color:var(--green)}

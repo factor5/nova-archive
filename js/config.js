@@ -13,4 +13,12 @@ export const AW=Object.fromEntries(AWARDS.map(a=>[a.key,a]));
 export const LS='nova-archive-v1';
 export const PAGE=60;
 export const FB_VER='11.10.0';
-export const THEMES=[['dark','☾','Nova (dark)'],['paper','☀','Paper (light)'],['auto','◐','Auto (follows phone)']];
+/* [id, icon, label, browser-bar colour, swatch colour]. Add a theme here and as css/theme-<id>.css. */
+export const THEMES=[
+  ['dark','☾','Nova (dark)','#04060d','#3be8ff'],
+  ['paper','☀','Paper (light)','#f3eee1','#0f6b73'],
+  ['terminal','>_','Terminal (green on black)','#000000','#39ff7a'],
+  ['dune','≋','Dune (sand and spice)','#1b120b','#e8a24a'],
+  ['auto','◐','Auto (light or dark, follows phone)','','#93a8d0']
+];
+export const AUTO_LIGHT='paper',AUTO_DARK='dark';

@@ -1,0 +1,19 @@
+/* Terminal theme: phosphor green on black, monospace, sharp corners, faint scanlines. */
+:root[data-theme=terminal]{
+  --bg:#000; --bg2:#031003; --panel:rgba(2,16,4,.88); --panel2:rgba(4,26,8,.92);
+  --line:rgba(57,255,122,.25); --line2:rgba(57,255,122,.55);
+  --cyan:#39ff7a; --mag:#ffb000; --amber:#ffb000; --green:#39ff7a;
+  --text:#b6ffcb; --muted:#4fbf75; --danger:#ff5f5f;
+  --acc:57,255,122; --accl:40,200,90; --magrgb:255,176,0; --field:#010a02; --surf:0,12,2; --neutral:255,255,255; --ink2:#8dffb0;
+  --scrim:rgba(0,8,0,.82); --onbtn:#eafff0; --bmixc:#fff; --bwbase:#031a07; --bwink:#eafff0;
+  --display:'IBM Plex Mono','Fira Code','JetBrains Mono',ui-monospace,Menlo,Consolas,monospace; --body:var(--display);
+  color-scheme:dark}
+:root[data-theme=terminal] body{background-image:none;font-size:15px}
+:root[data-theme=terminal] body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:70;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0,rgba(0,0,0,.18) 1px,transparent 1px,transparent 3px)}
+:root[data-theme=terminal] .stars{display:none}
+:root[data-theme=terminal] h1{background:none;color:var(--green);-webkit-text-fill-color:currentColor;text-shadow:0 0 12px rgba(57,255,122,.7)}
+:root[data-theme=terminal] h1:after{content:"_";animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){:root[data-theme=terminal] h1:after{animation:none}}
+:root[data-theme=terminal] .btn,:root[data-theme=terminal] .card,:root[data-theme=terminal] .panel,:root[data-theme=terminal] input,:root[data-theme=terminal] select,:root[data-theme=terminal] textarea,:root[data-theme=terminal] .pill,:root[data-theme=terminal] .chip,:root[data-theme=terminal] .b,:root[data-theme=terminal] .modal,:root[data-theme=terminal] .ncard,:root[data-theme=terminal] .now,:root[data-theme=terminal] .item,:root[data-theme=terminal] .mrow,:root[data-theme=terminal] .litem,:root[data-theme=terminal] nav.tabs a{border-radius:2px}
+:root[data-theme=terminal] .logo{border-radius:2px}

@@ -1,4 +1,5 @@
 /* User actions: click and keyboard handlers, list and reading operations. */
+import {setTheme,themePicker} from './theme.js';
 import {PAGE} from './config.js';
 import {$,esc,toast,uid} from './util.js';
 import {S,rating,setMeta,ui} from './state.js';
@@ -21,6 +22,7 @@ document.addEventListener('click',ev=>{
   const host=t.closest('[data-id]');const id=host&&host.dataset.id;
   const cur=S.lists.find(l=>l.id===ui.listId);
   if(act==='ovclose'){if(ev.target===t)closeOv();return}
+  if(act==='settheme'){setTheme(v);themePicker();return}
   if(act==='ovclose2'){closeOv();renderAll();return}
   if(act==='openbook'){bookOv(id);return}
   if(act==='read'){toggleRead(id);renderAll();return}

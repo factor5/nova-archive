@@ -7,11 +7,9 @@ A scratchpad for features to add later. Move items to "Done" when they ship.
 - Read marks, reading lists, list sorting
 - Now reading row, star ratings, notes
 - Back-to-top button
-- Paper (light) theme with Dark / Paper / Auto switcher (synced with your account)
+- Themes: Nova (dark), Paper (light), Terminal, Dune and Auto, with a theme picker (synced with your account)
 
 ## Themes
-- **Terminal**: green or amber monospace on black
-- **Dune**: sand and rust tones
 - Per-theme accent colours, or a user-picked accent
 
 ## Reading life
