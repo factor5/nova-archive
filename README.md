@@ -45,4 +45,4 @@ A static site, with no build step and no framework.
 
 ## License
 
-Application code: your choice of license, none is set yet. Award names and results are public facts compiled from the sources above.
+[MIT](LICENSE) for the application code. Award names and results are public facts compiled from the sources above.
