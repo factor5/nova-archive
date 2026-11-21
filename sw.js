@@ -2,7 +2,7 @@
    - Same-origin files: network first (so a new deploy shows up right away), cache as fallback.
    - Firebase SDK + Google Fonts: stale-while-revalidate runtime cache.
    - Firebase Auth helper URLs (/__/...) and Firestore/API traffic are never touched. */
-const VERSION = 'nova-v4';
+const VERSION = 'nova-v5';
 const SHELL = ['./', 'index.html', 'data.json', 'firebase-config.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
