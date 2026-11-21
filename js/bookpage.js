@@ -5,11 +5,29 @@ import {S,ui,setMeta} from './state.js';
 import {BOOKS,BYID} from './data.js';
 import {linkRow,stars,stateBtns} from './cards.js';
 import {touch} from './sync.js';
+import {cached,fetchInfo,enrichOn,coverUrl,workUrl} from './enrich.js';
 const href=id=>'#book/'+encodeURIComponent(id);
 const link=(b,extra='')=>`<a class="bl" href="${esc(href(b.id))}" data-act="gobook" data-v="${esc(b.id)}">${esc(b.title)}</a>${extra}`;
 const mark=id=>S.read.has(id)?'<span class="mk ok" title="Read">✓</span>':S.reading[id]?'<span class="mk go" title="Reading now">▶</span>':'';
 const day=ts=>new Date(ts).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
 const iso=ts=>{const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+function infoHTML(d){
+  if(!d)return '';
+  return `<div class="oinfo">${d.cover?`<img class="ocover" src="${esc(coverUrl(d.cover))}" alt="Cover of the book" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:''}
+    <div class="otext">${d.desc?`<p>${esc(d.desc).replace(/\n/g,'<br>')}</p>`:''}
+    ${d.year?`<div class="bsum">First published ${d.year}</div>`:''}
+    ${d.subjects.length?`<div class="bl2">${d.subjects.map(s=>`<span class="chip">${esc(s)}</span>`).join(' ')}</div>`:''}
+    <div class="by">Source: <a class="lk" href="${esc(workUrl(d.key))}" target="_blank" rel="noopener noreferrer">Open Library</a></div></div></div>`;
+}
+function loadInfo(b){
+  const box=$('#bookInfo');if(!box||!enrichOn())return;
+  const c=cached(b.id);
+  if(c!==undefined){box.innerHTML=infoHTML(c);box.hidden=!c;return}
+  if(!navigator.onLine)return;
+  box.hidden=false;box.innerHTML='<div class="by">Looking up cover and description…</div>';
+  fetchInfo(b).then(d=>{if(ui.page===b.id&&$('#bookInfo')){const x=$('#bookInfo');x.innerHTML=infoHTML(d);x.hidden=!d}},
+    ()=>{if(ui.page===b.id&&$('#bookInfo'))$('#bookInfo').hidden=true});
+}
 export function renderBookPage(){
   const ae=document.activeElement;if(ae&&ae.id==='pageNote')return;      // don't wipe notes being typed
   const id=ui.page,b=BYID.get(id),app=$('#app');
@@ -34,6 +52,7 @@ export function renderBookPage(){
       <button class="author" data-act="author" data-v="${esc(b.author)}" title="Show all books by this author">${esc(b.author)}</button>
       <div class="bsum">${b.wins} win${b.wins===1?'':'s'} · ${b.noms} nomination${b.noms===1?'':'s'} · ${b.first===b.last?b.first:b.first+'–'+b.last}</div>
       ${linkRow(b)}
+      <div id="bookInfo" hidden></div>
       <div class="acts">${stateBtns(id)}<button class="btn sm ghost" data-act="addlist">＋ List${lists.length?' ('+lists.length+')':''}</button></div>
     </section>
     <div class="bcols">
@@ -50,6 +69,7 @@ export function renderBookPage(){
     ${mine.length?`<section class="panel"><h3>More by ${esc(b.author)}</h3><ul class="blist">${mine.map(o=>`<li>${link(o,` <span class="by">${o.first===o.last?o.first:o.first+'–'+o.last}</span>`)}${o.wins?` <span class="wn">${'★'.repeat(Math.min(o.wins,5))}</span>`:''} ${mark(o.id)}</li>`).join('')}</ul></section>`:''}
     ${same?`<section class="panel"><h3>Same awards, same year</h3><div class="sygrid">${same}</div></section>`:''}
   </div>`;
+  loadInfo(b);
   const nt=$('#pageNote');
   if(nt)nt.addEventListener('change',()=>{setMeta(id,'n',nt.value.trim());touch()});
   const fin=$('#pageFin');

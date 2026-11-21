@@ -11,6 +11,7 @@ A personal web app for browsing science-fiction novel awards, tracking what you'
 - Mark books as read, start reading them (shown in a "Now reading" row), rate them 1–5 stars and keep private notes.
 - Build reading lists, reorder or sort them, and copy them as text.
 - A page for every book (tap its title): all awards, your rating, notes and finish date, other books by the author, and the books it competed against.
+- Book pages can show a cover, description and subjects from Open Library (only when a page is opened, cached in the browser, can be switched off on the About page).
 - Links to Wikipedia, Goodreads and ISFDB for every book and author.
 - Four themes (Nova dark, Paper light, Terminal, Dune) plus Auto, which follows the phone's light or dark setting.
 - Works offline once opened. Sign in with Google to sync your progress across devices.
@@ -25,7 +26,7 @@ A static site, with no build step and no framework.
 | `css/base.css` | Layout and components (colours come from theme tokens) |
 | `css/theme-*.css` | One file per theme (Nova, Paper, Terminal, Dune): design tokens and overrides |
 | `js/main.js` | Entry point (ES module): loads data, wires the page, starts sync |
-| `js/*.js` | Modules: `config`, `util`, `state`, `theme`, `sync` (Firebase), `data` (filtering and sorting), `cards`, `overlay`, `views`, `bookpage`, `actions` |
+| `js/*.js` | Modules: `config`, `util`, `state`, `theme`, `sync` (Firebase), `data` (filtering and sorting), `cards`, `overlay`, `views`, `bookpage`, `enrich` (Open Library lookup), `actions` |
 | `data.json` | The award data, one book per line |
 | `firebase-config.js` | Firebase web config (public by design; access is limited by Firestore rules) |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Offline support and installability (PWA) |
@@ -33,6 +34,7 @@ A static site, with no build step and no framework.
 
 - **Hosting:** GitHub Pages, served from the `main` branch root.
 - **Persistence:** Firebase Authentication (Google sign-in) and Cloud Firestore, one document per user at `users/<uid>`. Without signing in, progress is kept in the browser's local storage only.
+- **Open Library:** cover, description and subjects are fetched in the browser from `openlibrary.org` / `covers.openlibrary.org` when a book page opens. Nothing is stored in Firebase, and a failed lookup simply hides the section.
 - **Data:** award results come from Wikipedia list pages and sfadb (Locus Awards, 2026).
 
 ## Updating
