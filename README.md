@@ -11,6 +11,7 @@ A personal web app for browsing science-fiction novel awards, tracking what you'
 - Mark books as read, start reading them (shown in a "Now reading" row), rate them 1–5 stars and keep private notes.
 - Build reading lists, reorder or sort them, and copy them as text.
 - Links to Wikipedia, Goodreads and ISFDB for every book and author.
+- Dark "Nova" theme, light "Paper" theme, or automatic (follows the phone).
 - Works offline once opened. Sign in with Google to sync your progress across devices.
 
 ## How it works
@@ -42,6 +43,10 @@ A static site, with no build step and no framework.
 3. Add your GitHub Pages domain (for example `<username>.github.io`) under Authentication → Settings → Authorized domains.
 4. Set Firestore rules so each user can only read and write their own `users/<uid>` document. Restrict it further to specific emails if the app is for private use.
 5. Enable GitHub Pages: Settings → Pages → Deploy from a branch → `main` / root.
+
+## Ideas
+
+See [`IDEAS.md`](IDEAS.md) for planned and possible features.
 
 ## License
 
