@@ -220,3 +220,9 @@ def _header_visible(env):
     for sel in ('header, .hud', 'nav.tabs', '#q', '#sort', '#awardPills'):
         box = env.page.locator(sel).first.bounding_box()
         assert box and box['x'] >= 0 and box['x'] + box['width'] <= 390 + 1, (sel, box)
+
+
+@step(r'the author "(?P<a>[^"]+)" comes before "(?P<b>[^"]+)"')
+def _author_before(env, a, b):
+    h = headings(env); assert a in h and b in h, (a, b)
+    assert h.index(a) < h.index(b), (h.index(a), h.index(b))

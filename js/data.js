@@ -1,6 +1,6 @@
 /* Award data and filtering, grouping and sorting. */
 import {AW,AWARDS} from './config.js';
-import {norm,surname} from './util.js';
+import {norm,surname,sortKey} from './util.js';
 import {S,rating,ui} from './state.js';
 export let BOOKS=[],BYID=new Map();
 /* ---------- data prep ---------- */
@@ -20,7 +20,7 @@ export function prep(list){
     b.first=Math.min(...b.entries.map(e=>e.year));
     b.last=Math.max(...b.entries.map(e=>e.year));
     b.entries.sort((x,y)=>(y.result==='winner')-(x.result==='winner')||x.year-y.year);
-    b._s=surname(b.author);
+    b._s=surname(b.author);b._k=sortKey(b.author);
   }
   rebuild();
 }
@@ -60,7 +60,7 @@ export function sortBooks(arr){
     newest:(a,b)=>b.last-a.last||a.title.localeCompare(b.title),
     oldest:(a,b)=>a.first-b.first||a.title.localeCompare(b.title),
     title:(a,b)=>a.title.localeCompare(b.title),
-    author:(a,b)=>a._s.localeCompare(b._s)||a.title.localeCompare(b.title),
+    author:(a,b)=>a._k.localeCompare(b._k)||a.title.localeCompare(b.title),
     wins:(a,b)=>b.wins-a.wins||b.noms-a.noms,
     rating:(a,b)=>rating(b.id)-rating(a.id)||(b.wins*3+b.noms)-(a.wins*3+a.noms)
   }[ui.sort];
@@ -83,7 +83,7 @@ export function groups(arr){
   let keys=[...m.keys()];
   if(ui.group==='year'||ui.group==='decade')keys.sort((a,b)=>(isNaN(parseInt(a))-isNaN(parseInt(b)))||parseInt(b)-parseInt(a));
   else if(ui.group==='award'){const ix=k=>{const i=AWARDS.findIndex(x=>x.key===k);return i<0?99:i};keys.sort((a,b)=>ix(a)-ix(b))}
-  else keys.sort((a,b)=>surname(a).localeCompare(surname(b)));
+  else keys.sort((a,b)=>sortKey(a).localeCompare(sortKey(b)));
   const rev=ui.sort==='oldest';
   return keys.map(k=>{
     let books=m.get(k);

@@ -240,6 +240,14 @@ Feature: Browse the award library
     When I choose "Author A–Z" in the "Sort" filter
     Then the first card has the author "Shale Aaron"
 
+  @LIB-43
+  Scenario: Author sorting uses the real surname
+    When I choose "Author A–Z" in the "Sort" filter
+    And I group by "Author"
+    Then the author "Ursula K. Le Guin" comes before "Stanisław Lem"
+    And the author "China Miéville" comes before "Walter M. Miller Jr."
+    And the author "Ken Liu" comes before "Walter M. Miller Jr."
+
   # ---------- helpers ----------
 
   @LIB-50
