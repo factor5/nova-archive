@@ -7,7 +7,7 @@ import functools, http.server, json, os, re, socketserver, threading
 import pytest
 from playwright.sync_api import sync_playwright
 
-pytest_plugins = ['steps.common', 'steps.sync', 'steps.offline', 'steps.themes', 'steps.nav', 'steps.integrity']
+pytest_plugins = ['steps.common', 'steps.sync', 'steps.offline', 'steps.themes', 'steps.nav', 'steps.integrity', 'steps.library']
 from playwright.sync_api import expect as _expect
 _expect.set_options(timeout=6000)
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))

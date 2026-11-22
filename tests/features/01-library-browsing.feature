@@ -35,7 +35,7 @@ Feature: Browse the award library
     And a "Show more (60 of 1329)" button is shown
     When I tap "Show more"
     Then 120 cards are shown
-    And the button reads "Show more (120 of 1329)"
+    And the "Show more" button reads "Show more (120 of 1329)"
 
   @LIB-04 @smoke
   Scenario: A card shows the title, author, award badges and links
