@@ -38,7 +38,7 @@ Feature: Navigation, keyboard and accessibility
   @NV-05
   Scenario: The tab bar stays on one line on a phone
     Given a 390 px wide screen
-    Then the four header items fit on one row and none wraps
+    Then the three tabs fit on one row and none wraps
 
   @NV-10 @smoke
   Scenario: Back-to-top button
@@ -81,8 +81,9 @@ Feature: Navigation, keyboard and accessibility
     And every focused element has a visible focus ring
 
   @NV-31
-  Scenario: Enter and Space activate buttons and card previews
-    Given a card's preview area has focus
+  Scenario: Enter and Space open a Now reading card
+    Given I started reading "Hyperion"
+    And the "Now reading" card for "Hyperion" has focus
     When I press Enter
     Then the preview dialog opens
 
@@ -120,7 +121,7 @@ Feature: Navigation, keyboard and accessibility
   @NV-42 @mobile
   Scenario: Touch targets are large enough
     Given a 390 px wide screen
-    Then primary buttons are at least 36 px high
+    Then primary buttons are at least 36 px high and compact buttons at least 28 px
 
   @NV-50
   Scenario: No console errors during normal use

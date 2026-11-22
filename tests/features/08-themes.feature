@@ -48,7 +48,7 @@ Feature: Themes
     When I reload the page
     Then html[data-theme] is "terminal" before the first paint
 
-  @TH-06
+  @TH-06 @firebase-mock
   Scenario: Theme syncs across devices
     Given I am signed in and chose "Dune" on device A
     When I sign in on device B
