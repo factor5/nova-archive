@@ -30,16 +30,13 @@ Feature: Reading lists
     Then the list "Classics" exists
 
   @RL-04
-  Scenario Outline: Blank list names are rejected
+  Scenario: Blank list names are rejected
     Given I am on the "My Lists" tab
-    When I type "<name>" in the new list box and tap "Create"
+    When I tap "Create" with the new list box empty
     Then no list is created
     And the new list box has focus
-
-    Examples:
-      | name |
-      |      |
-      |      |
+    When I type "   " in the new list box and tap "Create"
+    Then no list is created
 
   @RL-05
   Scenario: List names are limited to 60 characters and shown as text
@@ -158,7 +155,7 @@ Feature: Reading lists
     Examples:
       | sort         | shown                              |
       | Title A–Z    | "Dune", "Hyperion", "Neuromancer"  |
-      | Author A–Z   | "Neuromancer", "Hyperion", "Dune"  |
+      | Author A–Z   | "Neuromancer", "Dune", "Hyperion"  |
       | Oldest first | "Dune", "Neuromancer", "Hyperion"  |
       | Newest first | "Hyperion", "Neuromancer", "Dune"  |
 
@@ -204,13 +201,15 @@ Feature: Reading lists
 
   @RL-44
   Scenario: The delete confirmation expires
-    Given I tapped "Delete list" once
+    Given I have a list "Classics"
+    And I opened the "Classics" list and tapped "Delete list" once
     When 3 seconds pass
     Then the button reads "Delete list" again
 
   @RL-45
   Scenario: Copy a list as text
     Given the list "Classics" holds "Dune" (read) and "Hyperion"
+    And I open the "Classics" list
     When I tap "Copy as text"
     Then the toast "List copied" is shown
     And the clipboard holds these lines:
@@ -222,7 +221,9 @@ Feature: Reading lists
 
   @RL-46
   Scenario: Copy falls back to a dialog when the clipboard is unavailable
-    Given the clipboard cannot be written
+    Given the list "Classics" holds "Dune" (read) and "Hyperion"
+    And I open the "Classics" list
+    And the clipboard cannot be written
     When I tap "Copy as text"
     Then a dialog "Copy list" shows the same text in a selectable box
 

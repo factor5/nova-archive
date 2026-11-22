@@ -41,7 +41,7 @@ Feature: Ratings, finish dates and notes
 
   @RN-05
   Scenario: Stars are accessible buttons
-    Given I tapped "Mark read" on "Dune"
+    Given I rated "Dune" 2 stars
     Then each star is a button labelled "1 star", "2 stars", "3 stars", "4 stars" and "5 stars"
     And a filled star has aria-pressed "true" and an empty one "false"
 

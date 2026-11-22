@@ -24,7 +24,18 @@ BOOK = {  # ids of the books used in scenarios
 
 
 def P(env): return env.page
-def bid(t): return BOOK.get(t) or t
+_IDS = {}
+
+
+def bid(t):
+    """Book id for a title: the few named ones, else the unique book with that title in data.json."""
+    if t in BOOK: return BOOK[t]
+    if not _IDS:
+        import os
+        for b in json.load(open(os.path.join(os.path.dirname(__file__), '..', '..', 'data.json'))):
+            _IDS.setdefault(b['title'], []).append(b['id'])
+    ids = _IDS.get(t)
+    return ids[0] if ids and len(ids) == 1 else t
 
 
 def saved(env):
@@ -58,10 +69,10 @@ def card(env, title):
     page = env.page
     loc = page.locator('#results .card', has=page.locator('h3 a', has_text=re.compile('^%s$' % re.escape(title))))
     if loc.count() == 0 and page.locator('#q').count():
-        page.fill('#q', title)
+        page.fill('#q', title); env.searched = True
         try: loc.first.wait_for(state='visible', timeout=3000)
         except Exception: pass
-    env.last_card = loc.first
+    env.last_card = loc.first; env.last_title = title
     return loc.first
 
 
@@ -249,9 +260,12 @@ def _top(env): assert env.page.evaluate('window.scrollY') < 5
 
 
 # ---------------------------------------------------------------- reading status
-@step(r'I tap "(?P<b>(?![↑↓]")[^"]+)" on "(?P<t>[^"]+)"')
+@step(r'I tap "(?P<b>(?![↑↓✕]")[^"]+)" on "(?P<t>[^"]+)"')
 def _tap_on(env, b, t):
+    env.searched = False
     btn(scope(env, t), b).click(); env.page.wait_for_timeout(150)
+    if getattr(env, 'searched', False) and env.page.locator('#q').count():
+        env.page.fill('#q', ''); env.page.wait_for_timeout(200)  # leave the filters as we found them
 
 
 @step(r'I tapped "(?P<b>[^"]+)" on "(?P<t>[^"]+)"')
@@ -417,7 +431,7 @@ def _type_save(env, t):
 
 
 @step(r'the button on the card now reads "(?P<b>[^"]+)"')
-def _note_btn(env, b): expect(btn(env.last_card, b)).to_be_visible()
+def _note_btn(env, b): expect(btn(card(env, env.last_title), b)).to_be_visible()
 
 
 @step(r'the saved data has the note "(?P<n>[^"]+)" for "(?P<id>[^"]+)"')
@@ -494,18 +508,6 @@ def _dlg_create(env, n):
     btn(d, 'Create & add').click(); env.page.wait_for_timeout(150)
 
 
-@step(r'the list "(?P<n>[^"]+)" holds "(?P<t>[^"]+)"')
-def _list_holds(env, n, t):
-    l = [x for x in saved(env)['lists'] if x['name'] == n][0]
-    assert bid(t) in l['books']
-
-
-@step(r'the list "(?P<n>[^"]+)" holds "(?P<a>[^"]+)", "(?P<b>[^"]+)" and "(?P<c>[^"]+)"')
-def _list_holds3(env, n, a, b, c):
-    make_list(env, n)
-    for t in (a, b, c): add_to_list(env, t, n)
-
-
 def add_to_list(env, title, name):
     go_tab(env, 'library')
     card(env, title).get_by_role('button', name=re.compile(r'^＋ List')).first.click()
@@ -555,7 +557,7 @@ def _arrow(env, a, t):
     li(env, t).get_by_label('Move up' if a == '↑' else 'Move down').click(); env.page.wait_for_timeout(120)
 
 
-@step(r'the order is (?P<ts>.+)')
+@step(r'the order is (?P<ts>"[^"]+".*)')
 def _order(env, ts):
     got = env.page.eval_on_selector_all('#app .item .t a', 'e=>e.map(x=>x.textContent)')
     assert got == split_titles(ts), got
