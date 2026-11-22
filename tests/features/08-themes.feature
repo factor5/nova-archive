@@ -19,7 +19,7 @@ Feature: Themes
 
     Examples:
       | scheme | theme |
-      | dark   | nova  |
+      | dark   | dark  |
       | light  | paper |
 
   @TH-03 @smoke
@@ -31,10 +31,10 @@ Feature: Themes
 
     Examples:
       | label    | id       | meta    |
-      | Nova     | nova     | #0b1020 |
-      | Paper    | paper    | #f4efe6 |
+      | Nova     | dark     | #04060d |
+      | Paper    | paper    | #f3eee1 |
       | Terminal | terminal | #000000 |
-      | Dune     | dune     | #1a120b |
+      | Dune     | dune     | #1b120b |
 
   @TH-04
   Scenario: The picker shows the four themes plus Auto
@@ -64,7 +64,7 @@ Feature: Themes
 
     Examples:
       | id       |
-      | nova     |
+      | dark     |
       | paper    |
       | terminal |
       | dune     |

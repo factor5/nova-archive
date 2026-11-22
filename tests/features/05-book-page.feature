@@ -30,7 +30,7 @@ Feature: Book page
   Scenario: Awards table lists every nomination
     When I open the book page for "Ancillary Justice"
     Then the awards table has 6 rows
-    And the first rows are the wins, newest first
+    And the rows are ordered newest year first
     And a winning row shows "★ Winner" on one line
     And the Hugo 2014 row is a winner
 

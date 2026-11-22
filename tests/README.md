@@ -107,12 +107,29 @@ Automation implements these once; features reuse them. Steps are written in plai
 
 **By an AI with Playwright.** Give it this README and a feature file. It should serve the folder, create a fresh browser context per scenario, route the mocks as described, implement the glossary steps, and report pass or fail per scenario id.
 
-## Roadmap to CI
+## Automated runner
 
-1. Implement the glossary as Playwright step definitions (or a thin `pytest-bdd` / `playwright-bdd` layer) under `tests/steps/`.
-2. Add a GitHub Actions workflow that, on every pull request: installs Playwright, runs `gen_facts.py --check`, serves the site, and runs `@smoke`; on merge to `main` also runs `@regression`.
-3. Make that workflow a required status check so nothing merges red.
-4. Later: Firestore security-rules tests with the Firebase emulator (see `09-persistence-and-sync.feature`, scenario `@SYNC-30`), and visual snapshots per theme.
+The scenarios run with `pytest-bdd` and Playwright (Chromium). The step code is in `tests/steps/common.py`,
+the browser, mocks and local web server in `tests/conftest.py`.
+
+```
+pip install -r tests/requirements.txt
+python -m playwright install chromium
+python -m pytest tests -m "smoke and not manual" -n 4      # what CI runs
+python -m pytest tests -k "LIB-01 or dune"                  # a single scenario or topic
+```
+
+**Status.** All `@smoke` scenarios have step definitions and pass. The remaining `@regression` scenarios are
+written but their steps are not implemented yet; running them fails with "Step definition is not found".
+That is intentional: they are the backlog. To automate one, add the missing steps to `steps/common.py`
+(reuse the existing ones where the wording matches) and, when it passes reliably, nothing else is needed:
+CI selects by tag. Next planned step is to run `regression` on merges to `main` once most of them pass.
+
+CI (`.github/workflows/tests.yml`) runs on every pull request and every push to `main`:
+facts check, repository checks, then the smoke scenarios. To make it a gate, enable branch protection on
+`main` and require the **tests / smoke** check.
+
+Later: Firestore rules tests with the Firebase emulator (`@SY-30`) and visual snapshots per theme.
 
 ## Writing new scenarios
 

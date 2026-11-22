@@ -17,8 +17,8 @@ Feature: Navigation, keyboard and accessibility
     Examples:
       | tab      | hash     | marker                  |
       | Library  | #library | the search box          |
-      | My Lists | #lists   | "Mission board empty"   |
-      | About    | #about   | "Awards covered"        |
+      | My Lists | #lists   | Mission board empty   |
+      | About    | #about   | What’s in here        |
 
   @NV-02
   Scenario: Opening an address goes straight to that page

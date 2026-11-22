@@ -83,9 +83,9 @@ Feature: Open Library enrichment
 
   @OL-12 @ol-mock
   Scenario: Custom books are enriched too
-    Given I added "Piranesi" by "Susanna Clarke"
+    Given I added "Convenience Store Woman" by "Sayaka Murata"
     When I open its book page
-    Then Open Library is asked for "Piranesi Clarke"
+    Then Open Library is asked for "Convenience Store Woman Clarke"
 
   @OL-13 @ol-mock
   Scenario: Only the title and author are sent

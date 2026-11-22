@@ -143,7 +143,7 @@ Feature: Reading status
     Given I started reading "Hyperion"
     When I tap the "Hyperion" card in the "Now reading" row
     Then a dialog shows the full card for "Hyperion"
-    And it has "Open full page ›", "✓ Finish", "Stop", "＋ List", "✎ Add note" and "Close"
+    And the preview has "Open full page ›", "✓ Finish", "Stop", "＋ List", "✎ Add note" and "Close"
     When I tap "Stop" in the preview
     Then the preview now shows "Mark read" and "▶ Start"
     And the "Now reading" row is gone

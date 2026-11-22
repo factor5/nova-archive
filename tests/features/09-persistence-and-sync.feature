@@ -6,6 +6,7 @@ Feature: Persistence and cloud sync
 
   Background:
     Given a fresh browser profile
+    And the app is open
 
   # ---------- local ----------
 
@@ -14,7 +15,7 @@ Feature: Persistence and cloud sync
     Given I am signed out
     When I mark "Dune" read and reload
     Then "Dune" is still read
-    And the status shows "Local only"
+    And the status shows "Saved in this browser only"
 
   @SY-02
   Scenario: Corrupt local data does not break the app
@@ -40,7 +41,7 @@ Feature: Persistence and cloud sync
   Scenario: Sign in with Google
     When I tap the sign-in icon button
     Then the button becomes a sign-out icon
-    And the status icon shows "Synced"
+    And the status shows "Cloud synced"
 
   @SY-11 @firebase-mock
   Scenario: Local data is uploaded when the cloud is empty
@@ -89,7 +90,7 @@ Feature: Persistence and cloud sync
     Given I am signed in with "Dune" read
     When I tap sign out
     Then "Dune" is still read
-    And the status shows "Local only"
+    And the status shows "Sign in to sync"
 
   @SY-18 @firebase-mock
   Scenario: Two accounts on one device do not mix
@@ -104,16 +105,16 @@ Feature: Persistence and cloud sync
     Given I am signed in
     And the next cloud write fails
     When I mark "Dune" read
-    Then the status shows "Sync error"
+    Then the status shows "Sync problem – kept in this browser"
     And the data is still saved locally
     When I make another change
-    Then the write succeeds and the status shows "Synced"
+    Then the write succeeds and the status shows "Cloud synced"
 
   @SY-21 @firebase-mock
   Scenario: Offline edits sync later
     Given I am signed in and the network is offline
     When I mark "Dune" read
-    Then the status shows "Offline" or "Syncing…" and the data is local
+    Then the status shows "Offline – will sync when connected" and the data is local
     When the network returns
     Then the cloud document has "Dune"
 

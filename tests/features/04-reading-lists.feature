@@ -69,7 +69,7 @@ Feature: Reading lists
   @RL-12 @smoke
   Scenario: Create a list from the dialog and add the book in one step
     When I tap "＋ List" on "Dune"
-    And I type "Fresh list" in the dialog box and tap "Create"
+    And I type "Fresh list" in the dialog box and tap "Create & add"
     Then the toast "Added to “Fresh list”" is shown
     And the list "Fresh list" holds "Dune"
 
@@ -205,7 +205,7 @@ Feature: Reading lists
   @RL-44
   Scenario: The delete confirmation expires
     Given I tapped "Delete list" once
-    When 4 seconds pass
+    When 3 seconds pass
     Then the button reads "Delete list" again
 
   @RL-45

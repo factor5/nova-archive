@@ -1,0 +1,38 @@
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tests/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install test tools
+        run: |
+          pip install -r tests/requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: Facts match the data
+        run: python3 tests/support/gen_facts.py --check
+      - name: Repository checks (data, versions, precache, secrets)
+        run: python3 tests/support/check_repo.py
+      - name: Smoke scenarios in a real browser
+        run: python -m pytest tests -m "smoke and not manual" -n auto
+      - name: Keep failure details
+        if: failure()
+        run: echo "Re-run locally with:  python -m pytest tests -m 'smoke and not manual' -x"
