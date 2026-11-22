@@ -33,6 +33,7 @@ jobs:
         run: python3 tests/support/check_repo.py
       - name: Smoke scenarios in a real browser
         run: python -m pytest tests -m "smoke and not manual" -n auto
-      - name: Keep failure details
+      - name: Hint for local reproduction
         if: failure()
-        run: echo "Re-run locally with:  python -m pytest tests -m 'smoke and not manual' -x"
+        run: |
+          echo "Re-run locally: python -m pytest tests -m 'smoke and not manual' -x"
