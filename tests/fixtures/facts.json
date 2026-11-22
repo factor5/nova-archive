@@ -1,0 +1,324 @@
+{
+  "author_az_first": "Shale Aaron",
+  "author_counts": {
+    "Arthur C. Clarke": 4,
+    "Charles Stross": 8,
+    "Ursula K. Le Guin": 8
+  },
+  "authors_total": 629,
+  "books": {
+    "Ancillary Justice": {
+      "author": "Ann Leckie",
+      "entries": [
+        [
+          "Arthur C. Clarke Award",
+          2014,
+          "winner"
+        ],
+        [
+          "BSFA Award",
+          2013,
+          "winner"
+        ],
+        [
+          "Hugo Award",
+          2014,
+          "winner"
+        ],
+        [
+          "John W. Campbell Memorial Award",
+          2014,
+          "finalist"
+        ],
+        [
+          "Nebula Award",
+          2013,
+          "winner"
+        ],
+        [
+          "Philip K. Dick Award",
+          2014,
+          "finalist"
+        ]
+      ],
+      "id": "ancillary-justice--ann-leckie",
+      "nominations": 6,
+      "wins": 4
+    },
+    "Dune": {
+      "author": "Frank Herbert",
+      "entries": [
+        [
+          "Hugo Award",
+          1966,
+          "winner"
+        ],
+        [
+          "Nebula Award",
+          1965,
+          "winner"
+        ]
+      ],
+      "id": "dune--frank-herbert",
+      "nominations": 2,
+      "wins": 2
+    },
+    "Hyperion": {
+      "author": "Dan Simmons",
+      "entries": [
+        [
+          "Arthur C. Clarke Award",
+          1992,
+          "finalist"
+        ],
+        [
+          "BSFA Award",
+          1990,
+          "finalist"
+        ],
+        [
+          "Hugo Award",
+          1990,
+          "winner"
+        ],
+        [
+          "Locus Award (SF Novel)",
+          1990,
+          "winner"
+        ]
+      ],
+      "id": "hyperion--dan-simmons",
+      "nominations": 4,
+      "wins": 2
+    },
+    "Neptune's Brood": {
+      "author": "Charles Stross",
+      "entries": [
+        [
+          "Hugo Award",
+          2014,
+          "finalist"
+        ],
+        [
+          "John W. Campbell Memorial Award",
+          2014,
+          "finalist"
+        ]
+      ],
+      "id": "neptune-s-brood--charles-stross",
+      "nominations": 2,
+      "wins": 0
+    },
+    "Rendezvous with Rama": {
+      "author": "Arthur C. Clarke",
+      "entries": [
+        [
+          "BSFA Award",
+          1973,
+          "winner"
+        ],
+        [
+          "Hugo Award",
+          1974,
+          "winner"
+        ],
+        [
+          "John W. Campbell Memorial Award",
+          1974,
+          "winner"
+        ],
+        [
+          "Nebula Award",
+          1973,
+          "winner"
+        ]
+      ],
+      "id": "rendezvous-with-rama--arthur-c-clarke",
+      "nominations": 4,
+      "wins": 4
+    },
+    "The City & the City": {
+      "author": "China Miéville",
+      "entries": [
+        [
+          "Arthur C. Clarke Award",
+          2010,
+          "winner"
+        ],
+        [
+          "BSFA Award",
+          2009,
+          "winner"
+        ],
+        [
+          "Hugo Award",
+          2010,
+          "winner"
+        ],
+        [
+          "John W. Campbell Memorial Award",
+          2010,
+          "finalist"
+        ],
+        [
+          "Nebula Award",
+          2009,
+          "finalist"
+        ]
+      ],
+      "id": "the-city-the-city--china-mieville",
+      "nominations": 5,
+      "wins": 3
+    },
+    "The Left Hand of Darkness": {
+      "author": "Ursula K. Le Guin",
+      "entries": [
+        [
+          "Hugo Award",
+          1970,
+          "winner"
+        ],
+        [
+          "Nebula Award",
+          1969,
+          "winner"
+        ]
+      ],
+      "id": "the-left-hand-of-darkness--ursula-k-le-guin",
+      "nominations": 2,
+      "wins": 2
+    }
+  },
+  "books_total": 1329,
+  "books_with_a_win": 296,
+  "decades": {
+    "1950": {
+      "books": 13,
+      "winners_only": 5
+    },
+    "1960": {
+      "books": 71,
+      "winners_only": 15
+    },
+    "1970": {
+      "books": 108,
+      "winners_only": 26
+    },
+    "1980": {
+      "books": 176,
+      "winners_only": 46
+    },
+    "1990": {
+      "books": 227,
+      "winners_only": 52
+    },
+    "2000": {
+      "books": 287,
+      "winners_only": 63
+    },
+    "2010": {
+      "books": 309,
+      "winners_only": 57
+    },
+    "2020": {
+      "books": 166,
+      "winners_only": 36
+    }
+  },
+  "hugo_2014": [
+    [
+      "Ancillary Justice",
+      "winner"
+    ],
+    [
+      "Neptune's Brood",
+      "finalist"
+    ],
+    [
+      "Parasite",
+      "finalist"
+    ],
+    [
+      "The Wheel of Time",
+      "finalist"
+    ],
+    [
+      "Warbound",
+      "finalist"
+    ]
+  ],
+  "hugo_or_nebula_books": 593,
+  "ids_unique": true,
+  "oldest_first": "The Demolished Man",
+  "per_award": {
+    "Arthur C. Clarke Award": {
+      "books": 247,
+      "books_with_win": 40,
+      "entries": 247,
+      "first_year": 1987,
+      "last_year": 2026,
+      "winner_entries": 40
+    },
+    "BSFA Award": {
+      "books": 250,
+      "books_with_win": 57,
+      "entries": 250,
+      "first_year": 1969,
+      "last_year": 2025,
+      "winner_entries": 57
+    },
+    "Hugo Award": {
+      "books": 361,
+      "books_with_win": 74,
+      "entries": 362,
+      "first_year": 1953,
+      "last_year": 2026,
+      "winner_entries": 74
+    },
+    "John W. Campbell Memorial Award": {
+      "books": 310,
+      "books_with_win": 49,
+      "entries": 310,
+      "first_year": 1973,
+      "last_year": 2019,
+      "winner_entries": 49
+    },
+    "Locus Award (SF Novel)": {
+      "books": 56,
+      "books_with_win": 47,
+      "entries": 56,
+      "first_year": 1980,
+      "last_year": 2026,
+      "winner_entries": 47
+    },
+    "Nebula Award": {
+      "books": 384,
+      "books_with_win": 62,
+      "entries": 384,
+      "first_year": 1965,
+      "last_year": 2025,
+      "winner_entries": 62
+    },
+    "Philip K. Dick Award": {
+      "books": 256,
+      "books_with_win": 47,
+      "entries": 256,
+      "first_year": 1983,
+      "last_year": 2026,
+      "winner_entries": 47
+    }
+  },
+  "search": {
+    "dune": 3,
+    "leckie": 5
+  },
+  "top_most_honoured": [
+    "Ancillary Justice",
+    "Rendezvous with Rama",
+    "The City & the City"
+  ],
+  "top_most_wins": [
+    "Ancillary Justice",
+    "Rendezvous with Rama"
+  ]
+}

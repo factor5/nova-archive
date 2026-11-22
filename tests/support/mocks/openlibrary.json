@@ -1,0 +1,14 @@
+{
+  "_comment": "Canned Open Library responses. Route https://openlibrary.org/search.json* by query: title=Ancillary Justice -> searchAncillary; q contains 'solaris' -> searchSolaris; q contains 'nothing' -> searchEmpty. Route https://openlibrary.org/works/OL1W.json -> work. Route https://covers.openlibrary.org/** -> a 1x1 PNG. Send header access-control-allow-origin: *.",
+  "searchAncillary": {"docs": [
+    {"key": "/works/OL0W", "title": "Ancillary Justice: The Graphic Novel", "author_name": ["Someone Else"], "cover_i": 9, "first_publish_year": 2020, "subject": ["Comics"]},
+    {"key": "/works/OL1W", "title": "Ancillary Justice", "author_name": ["Ann Leckie"], "cover_i": 1234, "first_publish_year": 2013,
+     "subject": ["Science fiction", "Space opera", "A very long subject name that must be dropped because it is too long", "Artificial intelligence"]}
+  ]},
+  "searchSolaris": {"docs": [
+    {"key": "/works/OL2W", "title": "The Dispossessed", "author_name": ["Ursula K. Le Guin"], "first_publish_year": 1974},
+    {"key": "/works/OL3W", "title": "Solaris", "author_name": ["Stanisław Lem"], "first_publish_year": 1961}
+  ]},
+  "searchEmpty": {"docs": []},
+  "work": {"description": {"type": "/type/text", "value": "The offspring of a star ship AI seeks revenge.\r\n\r\n([source][1])\r\n\r\n[1]: http://example.com"}}
+}
