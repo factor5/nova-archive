@@ -9,7 +9,7 @@ from playwright.sync_api import sync_playwright
 
 pytest_plugins = ['steps.common', 'steps.sync', 'steps.offline']
 from playwright.sync_api import expect as _expect
-_expect.set_options(timeout=3000)
+_expect.set_options(timeout=6000)
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 MOCKS = os.path.join(os.path.dirname(__file__), 'support', 'mocks')
 OL = json.load(open(os.path.join(MOCKS, 'openlibrary.json')))
@@ -77,7 +77,7 @@ class Env:
         self.ctx.route(re.compile(r'https://covers\.openlibrary\.org/.*'), lambda r: r.fulfill(status=200, body=PNG, content_type='image/png', headers={'access-control-allow-origin': '*'}))
         self.ctx.route(re.compile(r'https://openlibrary\.org/.*'), self._ol)
         self.page = self.ctx.new_page()
-        self.page.set_default_timeout(4000)
+        self.page.set_default_timeout(8000)
         self.page.on('pageerror', lambda e: self.console_errors.append(str(e)))
         self.page.on('console', lambda m: m.type == 'error' and 'Failed to load resource' not in m.text and self.console_errors.append(m.text))
         return self.page

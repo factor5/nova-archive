@@ -37,6 +37,16 @@ def wait_ready(env):
     env.page.wait_for_selector('#results .card, .lside, .bpage, .about, .empty', timeout=T)
 
 
+TAB_READY = {'library': '#q', 'lists': '.lside', 'about': '.about'}
+
+
+def go_tab(env, key):
+    """Click a tab and wait until that page has actually rendered (not the one we left)."""
+    env.page.click('nav.tabs a[data-tab="%s"]' % key)
+    env.page.wait_for_selector(TAB_READY[key], timeout=T)
+    if key == 'library': env.page.wait_for_selector('#results .card', timeout=T)
+
+
 def open_hash(env, h):
     env.page.goto(env.base_url + h)
     env.page.wait_for_load_state('load')
@@ -102,8 +112,7 @@ def _opened_once(env): open_hash(env, '#library')
 def _tab(env, tab=None, tab2=None, tab3=None):
     name = tab or tab2 or tab3
     key = {'Library': 'library', 'My Lists': 'lists', 'About': 'about'}[name]
-    env.page.click('nav.tabs a[data-tab="%s"]' % key)
-    wait_ready(env)
+    go_tab(env, key)
 
 
 @step(r'I reload the page|I reload')
@@ -430,7 +439,7 @@ def _tab_count(env, n): expect(env.page.locator('nav.tabs a[data-tab="lists"]'))
 
 def make_list(env, name):
     if not env.page.locator('#newListName').count():
-        env.page.click('nav.tabs a[data-tab="lists"]'); wait_ready(env)
+        go_tab(env, 'lists')
     env.page.fill('#newListName', name)
     env.page.click('[data-act="newlist"]'); env.page.wait_for_timeout(150)
 
@@ -442,7 +451,7 @@ def _create_list(env, n): make_list(env, n)
 @step(r'I have a list "(?P<n>[^"]+)"')
 def _have_list(env, n):
     make_list(env, n)
-    env.page.click('nav.tabs a[data-tab="library"]'); wait_ready(env)
+    go_tab(env, 'library')
 
 
 @step(r'the list "(?P<n>[^"]+)" appears in the side list showing "(?P<c>[^"]+)"')
@@ -498,7 +507,7 @@ def _list_holds3(env, n, a, b, c):
 
 
 def add_to_list(env, title, name):
-    env.page.click('nav.tabs a[data-tab="library"]'); wait_ready(env)
+    go_tab(env, 'library')
     card(env, title).get_by_role('button', name=re.compile(r'^＋ List')).first.click()
     dialog(env).locator('[data-act]', has_text=name).first.click()
     dialog(env).get_by_role('button', name='Done').click()
@@ -507,7 +516,7 @@ def add_to_list(env, title, name):
 
 @step(r'I open the "(?P<n>[^"]+)" list')
 def _open_list(env, n):
-    env.page.click('nav.tabs a[data-tab="lists"]'); wait_ready(env)
+    go_tab(env, 'lists')
     env.page.locator('#app .litem', has_text=n).first.click(); env.page.wait_for_timeout(120)
 
 
@@ -542,7 +551,7 @@ def _item_btns(env, t):
 @step(r'I tap "(?P<a>↑|↓)" on "(?P<t>[^"]+)"')
 def _arrow(env, a, t):
     if not env.page.locator('#app .item').count():
-        env.page.click('nav.tabs a[data-tab="lists"]'); wait_ready(env)
+        go_tab(env, 'lists')
     li(env, t).get_by_label('Move up' if a == '↑' else 'Move down').click(); env.page.wait_for_timeout(120)
 
 
@@ -554,7 +563,7 @@ def _order(env, ts):
 
 @step(r'I change its name to "(?P<n>[^"]+)" and leave the field')
 def _rename(env, n):
-    env.page.click('nav.tabs a[data-tab="lists"]'); wait_ready(env)
+    go_tab(env, 'lists')
     env.page.locator('#app .litem').first.click()
     f = env.page.locator('#listName'); f.fill(n); f.blur(); env.page.wait_for_timeout(150)
 
@@ -570,7 +579,7 @@ def _saved_listname(env, n): assert n in [l['name'] for l in saved(env)['lists']
 @step(r'I have a list "(?P<n>[^"]+)" holding "(?P<t>[^"]+)"')
 def _list_holding(env, n, t):
     make_list(env, n); add_to_list(env, t, n)
-    env.page.click('nav.tabs a[data-tab="lists"]'); wait_ready(env)
+    go_tab(env, 'lists')
     env.page.locator('#app .litem', has_text=n).first.click()
 
 
@@ -592,7 +601,7 @@ def _list_gone(env): assert saved(env)['lists'] == []
 
 @step(r'"(?P<t>[^"]+)" is still in the library')
 def _still_lib(env, t):
-    env.page.click('nav.tabs a[data-tab="library"]'); wait_ready(env)
+    go_tab(env, 'library')
     assert bid(t) not in saved(env).get('read', []) or True
     expect(card(env, t)).to_be_visible()
 
@@ -622,7 +631,7 @@ def _title_dlg(env):
 @step(r'I tap the title in a reading list')
 def _title_list(env):
     make_list(env, 'L'); add_to_list(env, 'Ancillary Justice', 'L')
-    env.page.click('nav.tabs a[data-tab="lists"]'); wait_ready(env)
+    go_tab(env, 'lists')
     env.page.locator('#app .litem').first.click()
     li(env, 'Ancillary Justice').locator('a.bl').click(); env.page.wait_for_selector('.bpage')
 
@@ -690,7 +699,7 @@ def _row_that(env): expect(env.page.locator('#nowReading .nt')).to_have_text('Hy
 
 # ---------------------------------------------------------------- my books
 def add_book(env, title, author, year=''):
-    env.page.click('nav.tabs a[data-tab="library"]'); wait_ready(env)
+    go_tab(env, 'library')
     env.page.click('[data-act="addbook"]')
     env.page.fill('#abT', title); env.page.fill('#abA', author); env.page.fill('#abY', year)
     env.page.click('[data-act="absave"]'); env.page.wait_for_timeout(250)
@@ -776,7 +785,7 @@ def _page_year(env, y): expect(env.page.locator('.bhead')).to_contain_text(y)
 @step(r'I added "Convenience Store Woman", marked it read, rated it, noted it and listed it')
 def _added_all(env):
     add_book(env, 'Convenience Store Woman', 'Sayaka Murata')
-    env.page.click('nav.tabs a[data-tab="library"]'); wait_ready(env)
+    go_tab(env, 'library')
     env.page.fill('#q', 'convenience'); env.page.wait_for_timeout(250)
     c = env.page.locator('#results .card').first
     btn(c, 'Mark read').click(); c.locator('.st').nth(3).click()

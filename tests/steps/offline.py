@@ -1,7 +1,7 @@
 """Steps for 10-offline-and-updates.feature."""
 import json, os, re
 from playwright.sync_api import expect
-from steps.common import step, wait_ready, T
+from steps.common import go_tab, step, wait_ready, T
 from steps import common
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -38,7 +38,7 @@ def _shell_cached(env):
 def _version_about(env):
     sw = open(os.path.join(ROOT, 'sw.js')).read()
     ver = re.search(r"VERSION = 'nova-v(\d+)'", sw).group(1)
-    env.page.click('nav.tabs a[data-tab="about"]'); wait_ready(env)
+    go_tab(env, 'about')
     expect(env.page.locator('.about')).to_contain_text('App version ' + ver)
 
 
