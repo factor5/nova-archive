@@ -13,7 +13,7 @@ Feature: Data and repository integrity
   @DI-02
   Scenario: Ids are unique and stable
     Then no two books share an id
-    And every id equals the slug of title and author joined by "--"
+    And every id equals the slug of the title and of the first author joined by "--"
 
   @DI-03
   Scenario: Entries are valid

@@ -961,29 +961,21 @@ def _at_top(env):
 
 
 # ---------------------------------------------------------------- data integrity (browser-free)
+_REPORT = {}
+
+
 @pytest.fixture
 def repo_check():
+    """Runs tests/support/check_repo.py once per test session and returns its output lines."""
     import subprocess, sys, os
-    return lambda: subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), '..', 'support', 'check_repo.py')], capture_output=True, text=True)
+    def run():
+        if 'lines' not in _REPORT:
+            r = subprocess.run([sys.executable, os.path.join(os.path.dirname(__file__), '..', 'support', 'check_repo.py')], capture_output=True, text=True)
+            _REPORT['lines'] = r.stdout.splitlines()
+        return _REPORT['lines']
+    return run
 
 
 def _di(repo_check, tag):
-    r = repo_check()
-    bad = [l for l in r.stdout.splitlines() if tag in l]
+    bad = [l for l in repo_check() if tag in l]
     assert not bad, '\n'.join(bad)
-
-
-@step(r'data\.json|it is a JSON array of 1329 books|every book has string "id", "title", "author" and a list "entries"')
-def _di1(repo_check): _di(repo_check, 'DI-01')
-
-
-@step(r'the VERSION in sw\.js, every "\?v=" in index\.html and the app-version meta are the same number')
-def _di10(repo_check): _di(repo_check, 'DI-10')
-
-
-@step(r'no file contains a private key block, a service-account JSON or an API secret|firebase-config\.js holds only the public web config')
-def _di14(repo_check): _di(repo_check, 'DI-14')
-
-
-@given(parsers.parse('data.json'))
-def _given_data(): pass

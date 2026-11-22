@@ -12,6 +12,13 @@ d = json.load(open(P('data.json')))
 ok(isinstance(d, list) and len(d) == 1329, 'DI-01 expected 1329 books, got %d' % len(d))
 ids = [b.get('id') for b in d]
 ok(len(set(ids)) == len(ids), 'DI-02 duplicate ids')
+import unicodedata
+def slug(t):
+    t = unicodedata.normalize('NFKD', t).encode('ascii', 'ignore').decode().lower()
+    return re.sub(r'[^a-z0-9]+', '-', t).strip('-')
+for b in d:
+    first = re.split(r'\s+(?:&|and)\s+', b['author'])[0]
+    ok(b['id'] == slug(b['title']) + '--' + slug(first), 'DI-02 id %s does not match title and first author' % b['id'])
 for b in d:
     ok(all(isinstance(b.get(k), str) and b[k] for k in ('id','title','author')) and isinstance(b.get('entries'), list), 'DI-01 shape %s' % b.get('id'))
     ok(b.get('entries'), 'DI-05 empty entries %s' % b.get('id'))
@@ -61,11 +68,14 @@ for f in sorted(glob.glob(P('tests','features','*.feature'))):
             ok(len(ids_) == 1, 'DI-16 %s:%d needs exactly one id tag, has %s' % (os.path.basename(f), i+1, ids_))
             for x in ids_:
                 ok(x not in tags, 'DI-16 duplicate %s' % x); tags[x] = 1
-# DI-07: parse.py rewrites data.json in place; it must leave it byte-identical
-before = open(P('data.json'), 'rb').read()
-subprocess.run(['python3', P('tools', 'parse.py')], capture_output=True, cwd=R)
-ok(open(P('data.json'), 'rb').read() == before, 'DI-07 parse.py output differs from data.json')
-open(P('data.json'), 'wb').write(before)
+# DI-07: parse.py must reproduce data.json byte for byte. Run it on a copy so the real file is never rewritten
+# (browser tests read data.json at the same time).
+import shutil
+with tempfile.TemporaryDirectory() as tmp:
+    shutil.copytree(P('tools'), os.path.join(tmp, 'tools'))
+    subprocess.run(['python3', os.path.join(tmp, 'tools', 'parse.py')], capture_output=True, cwd=tmp)
+    out = os.path.join(tmp, 'data.json')
+    ok(os.path.exists(out) and open(out, 'rb').read() == open(P('data.json'), 'rb').read(), 'DI-07 parse.py output differs from data.json')
 print('scenarios with id tags: %d' % len(tags))
 print('FAIL' if bad else 'OK'); [print(' -', m) for m in bad[:50]]
 sys.exit(1 if bad else 0)
