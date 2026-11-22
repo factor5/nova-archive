@@ -119,7 +119,7 @@ python -m pytest tests -m "smoke and not manual" -n 4      # what CI runs
 python -m pytest tests -k "LIB-01 or dune"                  # a single scenario or topic
 ```
 
-**Status.** All `@smoke` scenarios, all of `08-themes`, `09-persistence-and-sync`, `12-data-integrity`, `01-library-browsing`, `10-offline-and-updates` and `11-navigation-and-accessibility` have step definitions and pass (`@manual` and `@wip` scenarios are skipped). The remaining scenarios are
+**Status.** All `@smoke` scenarios, all of `08-themes`, `09-persistence-and-sync`, `12-data-integrity`, `01-library-browsing`, `02-reading-status`, `03-ratings-and-notes`, `04-reading-lists`, `10-offline-and-updates` and `11-navigation-and-accessibility` have step definitions and pass (`@manual` and `@wip` scenarios are skipped). The remaining scenarios are
 written but their steps are not implemented yet; running them fails with "Step definition is not found".
 Run one feature file with its number: `python -m pytest tests -m f09`.
 That is intentional: they are the backlog. To automate one, add the missing steps to `steps/common.py`

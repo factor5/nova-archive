@@ -35,14 +35,14 @@ Feature: Reading status
   @RS-04
   Scenario Outline: Filter by status
     Given I tapped "Mark read" on "Dune"
-    And I tapped "Start" on "Hyperion"
+    And I tapped "▶ Start" on "Hyperion"
     When I choose "<status>" in the "Status" filter
     Then the result count reads "<count>"
 
     Examples:
       | status       | count             |
       | All books    | 1329 books match  |
-      | Not read yet | 1327 books match  |
+      | Not read yet | 1328 books match  |
       | Reading now  | 1 book match    |
       | Already read | 1 book match    |
 
