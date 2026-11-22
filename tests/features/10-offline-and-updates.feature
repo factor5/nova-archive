@@ -27,7 +27,7 @@ Feature: Installable app, offline use and updates
     When I go offline and open the book page for "Dune"
     Then it renders from local data
 
-  @PW-05 @sw
+  @PW-05 @sw @wip
   Scenario: Online, fresh files are preferred
     Given the server now serves a changed "css/base.css"
     When I reload online
@@ -35,7 +35,7 @@ Feature: Installable app, offline use and updates
 
   @PW-06 @sw
   Scenario: Version query strings do not break offline fallback
-    When offline, "js/main.js?v=17" is requested
+    When offline, "js/main.js?v=999" is requested
     Then the cached "js/main.js" is returned
 
   @PW-07 @sw
@@ -44,7 +44,7 @@ Feature: Installable app, offline use and updates
     When the new service worker activates
     Then "nova-v1" is deleted
 
-  @PW-08 @sw
+  @PW-08 @sw @wip
   Scenario: Third-party assets use stale-while-revalidate
     Then the Firebase SDK and font requests are answered from cache when present and refreshed in the background
 

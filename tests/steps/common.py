@@ -49,7 +49,8 @@ def card(env, title):
     loc = page.locator('#results .card', has=page.locator('h3 a', has_text=re.compile('^%s$' % re.escape(title))))
     if loc.count() == 0 and page.locator('#q').count():
         page.fill('#q', title)
-        page.wait_for_timeout(250)
+        try: loc.first.wait_for(state='visible', timeout=3000)
+        except Exception: pass
     env.last_card = loc.first
     return loc.first
 
@@ -498,7 +499,7 @@ def _list_holds3(env, n, a, b, c):
 
 def add_to_list(env, title, name):
     env.page.click('nav.tabs a[data-tab="library"]'); wait_ready(env)
-    btn(card(env, title), '＋ List').click() if btn(card(env, title), '＋ List').count() else btn(card(env, title), re.compile(r'＋ List')).click()
+    card(env, title).get_by_role('button', name=re.compile(r'^＋ List')).first.click()
     dialog(env).locator('[data-act]', has_text=name).first.click()
     dialog(env).get_by_role('button', name='Done').click()
     env.page.wait_for_timeout(100)
@@ -897,7 +898,7 @@ def _signout_icon(env): expect(env.page.locator('#authBtn')).to_have_attribute('
 # ---------------------------------------------------------------- offline / sw
 @step(r'a service worker for the app scope is active')
 def _sw_active(env):
-    env.page.wait_for_function("navigator.serviceWorker.ready.then(r=>!!r.active)", timeout=T)
+    assert env.page.evaluate("navigator.serviceWorker.ready.then(r=>!!r.active)")
 
 
 @step(r'the network goes offline and I reload')

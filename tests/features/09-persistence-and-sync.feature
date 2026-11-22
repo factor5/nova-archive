@@ -131,7 +131,7 @@ Feature: Persistence and cloud sync
 
   # ---------- status display ----------
 
-  @SY-25 @mobile
+  @SY-25 @mobile @firebase-mock
   Scenario: Compact header on a phone
     Given a 390 px wide screen
     Then the sign-in control is an icon button

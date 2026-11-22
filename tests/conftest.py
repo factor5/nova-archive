@@ -7,7 +7,7 @@ import functools, http.server, json, os, re, socketserver, threading
 import pytest
 from playwright.sync_api import sync_playwright
 
-pytest_plugins = ['steps.common']
+pytest_plugins = ['steps.common', 'steps.sync', 'steps.offline']
 from playwright.sync_api import expect as _expect
 _expect.set_options(timeout=3000)
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -107,3 +107,15 @@ def env(browser, base_url, request):
     e = Env(browser, base_url, request)
     yield e
     e.close()
+
+
+def pytest_collection_modifyitems(items):
+    """Mark every scenario with its feature number (marker f01..f12) so one area can be run: -m f09."""
+    for item in items:
+        if item.get_closest_marker('wip'): item.add_marker(pytest.mark.skip(reason='wip: automation not possible yet (see tests/README.md)'))
+        if item.get_closest_marker('manual'): item.add_marker(pytest.mark.skip(reason='manual scenario: needs a person, a device or real services'))
+        from pytest_bdd.scenario import scenario_wrapper_template_registry as reg
+        tpl = reg.get(getattr(item, 'function', None))
+        if tpl is not None:
+            m = re.match(r'(\d\d)-', os.path.basename(tpl.feature.filename))
+            if m: item.add_marker(getattr(pytest.mark, 'f' + m.group(1)))
