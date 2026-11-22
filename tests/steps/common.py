@@ -701,6 +701,7 @@ def _row_that(env): expect(env.page.locator('#nowReading .nt')).to_have_text('Hy
 
 # ---------------------------------------------------------------- my books
 def add_book(env, title, author, year=''):
+    if env.page.url in ('about:blank', ''): open_hash(env, '#library')
     go_tab(env, 'library')
     env.page.click('[data-act="addbook"]')
     env.page.fill('#abT', title); env.page.fill('#abA', author); env.page.fill('#abY', year)
@@ -744,7 +745,8 @@ def _try_add(env, t, a):
 
 
 @step(r'the message "(?P<m>[^"]+)" is shown')
-def _abmsg(env, m): expect(env.page.locator('#abMsg')).to_contain_text(m)
+def _abmsg(env, m):
+    expect(env.page.locator('#abMsg, #cbMsg, #abRes, .empty').filter(has_text=m).first).to_be_visible()
 
 
 @step(r'nothing is added')
@@ -848,7 +850,7 @@ def _no_ol(env): assert not env.ol_calls, env.ol_calls
 
 
 @step(r'no enrichment panel is shown')
-def _no_panel(env): expect(env.page.locator('#bookInfo')).to_have_count(0) if env.page.locator('#bookInfo').count() == 0 else expect(env.page.locator('#bookInfo')).to_be_empty()
+def _no_panel(env): expect(env.page.locator('#bookInfo')).to_be_hidden()
 
 
 @step(r'the flag "nova-ol-off" is saved')

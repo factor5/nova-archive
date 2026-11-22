@@ -7,7 +7,7 @@ import functools, http.server, json, os, re, socketserver, threading
 import pytest
 from playwright.sync_api import sync_playwright
 
-pytest_plugins = ['steps.common', 'steps.sync', 'steps.offline', 'steps.themes', 'steps.nav', 'steps.integrity', 'steps.library', 'steps.shelf', 'steps.lists']
+pytest_plugins = ['steps.common', 'steps.sync', 'steps.offline', 'steps.themes', 'steps.nav', 'steps.integrity', 'steps.library', 'steps.shelf', 'steps.lists', 'steps.pages']
 from playwright.sync_api import expect as _expect
 _expect.set_options(timeout=6000)
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -51,6 +51,8 @@ class Env:
         self.firebase = 'firebase-mock' in marks
         self.ol_calls = []
         self.ol_mode = 'ok'
+        self.ol_pending = []
+        self.ol_desc = None
         self.ol_off = False
         self.console_errors = []
         self.ctx = None
@@ -88,6 +90,7 @@ class Env:
         cors = {'access-control-allow-origin': '*'}
         if self.ol_mode == 'fail': return route.abort()
         if self.ol_mode == 'hang': return
+        if self.ol_mode == 'slow': self.ol_pending.append(route); return
         if '/search.json' in url:
             low = url.lower()
             if self.ol_mode == 'empty' or 'nothing' in low or 'zzzz' in low: body = OL['searchEmpty']
@@ -95,7 +98,7 @@ class Env:
             else: body = OL['searchAncillary']
             return route.fulfill(status=200, content_type='application/json', headers=cors, body=json.dumps(body))
         if '/works/' in url:
-            return route.fulfill(status=200, content_type='application/json', headers=cors, body=json.dumps(OL['work']))
+            return route.fulfill(status=200, content_type='application/json', headers=cors, body=json.dumps({'description': self.ol_desc} if self.ol_desc else OL['work']))
         route.fulfill(status=404, body='{}', headers=cors)
 
     def close(self):

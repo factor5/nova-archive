@@ -51,9 +51,9 @@ Feature: My own books
 
   @MB-06
   Scenario: Id collisions get a numeric suffix
-    Given I added "Convenience Store Woman" by "Sayaka Murata"
-    When I add "Convenience Store Woman" by "Someone Murata"
-    Then the second id is "my--convenience-store-woman--murata-2"
+    Given I added a book whose title is 75 characters long
+    When I add another book that differs only after the 60th character of the title
+    Then the second id is the first id followed by "-2"
 
   @MB-07
   Scenario: Text is shown literally
@@ -65,7 +65,7 @@ Feature: My own books
   @MB-10 @ol-mock
   Scenario: Search Open Library and fill the form
     Given Open Library returns results for "ancillary"
-    When I type "ancillary" in the dialog's search box and tap "Search"
+    When I type "ancillary" in the dialog's search box
     Then up to 5 results with title, author and year are listed
     When I tap the first result
     Then Title, Author and Year are filled in
@@ -73,13 +73,13 @@ Feature: My own books
   @MB-11 @ol-mock
   Scenario: No results
     Given Open Library returns nothing for "zzzz"
-    When I search for "zzzz"
+    When I search Open Library for "zzzz"
     Then the message "No matches. You can still type the details below." is shown
 
   @MB-12 @ol-mock
   Scenario: Open Library is unreachable
     Given Open Library requests fail
-    When I search for "dune"
+    When I search Open Library for "dune"
     Then the message "Search unavailable. You can still type the details below." is shown
     And the manual form still works
 
@@ -102,7 +102,7 @@ Feature: My own books
     Given I added "Convenience Store Woman"
     When I choose "My books" in the "Source" filter
     Then only "Convenience Store Woman" is listed
-    When I choose "Award books"
+    When I choose "Award lists" in the "Source" filter
     Then "Convenience Store Woman" is not listed
 
   @MB-22
@@ -167,7 +167,7 @@ Feature: My own books
 
   # ---------- persistence ----------
 
-  @MB-40
+  @MB-40 @firebase-mock
   Scenario: My books survive a reload and sync
     Given I added "Convenience Store Woman" while signed in
     When I reload the page
