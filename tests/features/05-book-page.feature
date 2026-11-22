@@ -38,7 +38,7 @@ Feature: Book page
   Scenario: More by the same author
     When I open the book page for "Ancillary Justice"
     Then "More by Ann Leckie" lists "Ancillary Sword", "Ancillary Mercy", "Provenance" and "Translation State"
-    And "Ancillary Sword" shows 2 stars when I rated it 2
+    And "Ancillary Sword" is marked "✓" once I have read it
 
   @BP-05
   Scenario: Same awards, same year
@@ -74,7 +74,7 @@ Feature: Book page
   Scenario: Author button filters the library
     When I open the book page for "Ancillary Justice"
     And I tap the author "Ann Leckie"
-    Then the Library shows 5 books for the search "leckie"
+    Then the Library shows 5 books by the author "Ann Leckie"
 
   @BP-10
   Scenario: Unknown book id

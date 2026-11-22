@@ -85,7 +85,7 @@ Feature: Open Library enrichment
   Scenario: Custom books are enriched too
     Given I added "Convenience Store Woman" by "Sayaka Murata"
     When I open its book page
-    Then Open Library is asked for "Convenience Store Woman Clarke"
+    Then Open Library is asked for the title "Convenience Store Woman" and the author "Sayaka Murata"
 
   @OL-13 @ol-mock
   Scenario: Only the title and author are sent
