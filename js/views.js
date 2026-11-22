@@ -2,7 +2,7 @@
 import {enrichOn,setEnrich} from './enrich.js';
 import {renderBookPage} from './bookpage.js';
 import {AWARDS,PAGE} from './config.js';
-import {$,esc,surname} from './util.js';
+import {$,esc,sortKey} from './util.js';
 import {S,hasNote,rating,ui} from './state.js';
 import {touch} from './sync.js';
 import {BOOKS,BYID,groups,visible,baseCount} from './data.js';
@@ -66,7 +66,7 @@ export function renderLists(){
     let books=cur.books.map(id=>BYID.get(id)).filter(Boolean);
     const manual=ui.lsort==='manual';
     const yr=b=>b.first;
-    if(!manual){const F={title:(a,b)=>a.title.localeCompare(b.title),author:(a,b)=>surname(a.author).localeCompare(surname(b.author))||a.title.localeCompare(b.title),oldest:(a,b)=>yr(a)-yr(b),newest:(a,b)=>yr(b)-yr(a),unread:(a,b)=>(S.read.has(a.id)-S.read.has(b.id))}[ui.lsort];books=books.slice().sort(F)}
+    if(!manual){const F={title:(a,b)=>a.title.localeCompare(b.title),author:(a,b)=>sortKey(a.author).localeCompare(sortKey(b.author))||a.title.localeCompare(b.title),oldest:(a,b)=>yr(a)-yr(b),newest:(a,b)=>yr(b)-yr(a),unread:(a,b)=>(S.read.has(a.id)-S.read.has(b.id))}[ui.lsort];books=books.slice().sort(F)}
     const done=books.filter(b=>S.read.has(b.id)).length;
     main=`<section class="panel lmain">
       <div class="lhead"><input type="text" id="listName" value="${esc(cur.name)}" maxlength="60" aria-label="List name">
