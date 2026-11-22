@@ -4,8 +4,18 @@ import {S,ui} from './state.js';
 import {BYID} from './data.js';
 import {card,stars} from './cards.js';
 /* ---------- overlay ---------- */
-export function openOv(html){const r=$('#ovRoot');r.innerHTML=`<div class="ov" data-act="ovclose"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;const f=r.querySelector('input,button');if(f)f.focus()}
-export function closeOv(){ui.bookId=null;$('#ovRoot').innerHTML=''}
+let opener=null;
+export function openOv(html){
+  const r=$('#ovRoot');if(!r.innerHTML)opener=document.activeElement;
+  r.innerHTML=`<div class="ov" data-act="ovclose"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;
+  const m=r.querySelector('.modal'),h=m.querySelector('h3,h2');if(h){h.id='ovTitle';m.setAttribute('aria-labelledby','ovTitle')}
+  document.documentElement.classList.add('ov-open');
+  const f=r.querySelector('input,button');if(f)f.focus()
+}
+export function closeOv(){
+  ui.bookId=null;$('#ovRoot').innerHTML='';document.documentElement.classList.remove('ov-open');
+  if(opener&&opener.isConnected&&opener.focus)try{opener.focus({preventScroll:true})}catch(e){}opener=null
+}
 export function listPicker(ids,title,sub){
   const rows=S.lists.map(l=>{
     const all=ids.every(id=>l.books.includes(id));

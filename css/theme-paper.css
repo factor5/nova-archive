@@ -2,7 +2,7 @@
 :root[data-theme=paper]{
   --bg:#f3eee1; --bg2:#fbf8ef; --panel:rgba(255,252,243,.92); --panel2:rgba(250,244,230,.95);
   --line:rgba(90,70,40,.22); --line2:rgba(90,70,40,.45);
-  --cyan:#0f6b73; --mag:#a3324f; --amber:#b7791f; --green:#2f7d4f;
+  --cyan:#0f6b73; --mag:#a3324f; --amber:#8a5a0b; --green:#25663f;
   --text:#2b2418; --muted:#6a5e49; --danger:#b3261e;
   --acc:15,107,115; --accl:90,70,40; --magrgb:163,50,79; --field:#fffdf6; --surf:255,255,255; --neutral:0,0,0; --ink2:#4a3f2e;
   --scrim:rgba(40,30,15,.55); --onbtn:#12301f; --bmixc:#000; --bwbase:#fbf8ef; --bwink:#2b2418;

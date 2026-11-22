@@ -88,7 +88,7 @@ export function renderLists(){
   nl.addEventListener('keydown',e=>{if(e.key==='Enter')$('[data-act=newlist]').click()});
 }
 export function renderAbout(){
-  const counts=AWARDS.map(a=>{const w=BOOKS.reduce((n,b)=>n+b.entries.filter(e=>e.award===a.key&&e.result==='winner').length,0);const t=BOOKS.reduce((n,b)=>n+b.entries.filter(e=>e.award===a.key).length,0);return `<li><b style="color:${a.color}">${esc(a.short)}</b> — ${esc(a.key)}: ${w} winners, ${t-w} finalists recorded</li>`}).join('');
+  const counts=AWARDS.map(a=>{const w=BOOKS.reduce((n,b)=>n+b.entries.filter(e=>e.award===a.key&&e.result==='winner').length,0);const t=BOOKS.reduce((n,b)=>n+b.entries.filter(e=>e.award===a.key).length,0);return `<li><b><i class="dot" style="background:${a.color}" aria-hidden="true"></i>${esc(a.short)}</b> — ${esc(a.key)}: ${w} winners, ${t-w} finalists recorded</li>`}).join('');
   $('#app').innerHTML=`<section class="panel about">
     <h2>What’s in here</h2>
     <p>${baseCount()} distinct novels across seven science-fiction awards. Category covered: <b>Best Novel</b> only (the closest equivalent for each award).</p>
