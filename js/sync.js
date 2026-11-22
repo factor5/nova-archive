@@ -62,7 +62,7 @@ export async function onUser(u){
       const x=snap.data();
       if((x.updatedAt||0)>=S.updatedAt){loadFrom(x);try{localStorage.setItem(LS,JSON.stringify(serialize()))}catch(e){}}
       else{dirty=true}
-    }else if(S.read.size||S.lists.length||Object.keys(S.reading).length||Object.keys(S.meta).length){dirty=true}
+    }else if(S.read.size||S.lists.length||Object.keys(S.reading).length||Object.keys(S.meta).length||S.custom.length){dirty=true}
     setSync('synced');renderAll();
     if(dirty){setSync('saving');flush()}
     unsub=F.onSnapshot(d,s=>{

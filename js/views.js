@@ -5,7 +5,7 @@ import {AWARDS,PAGE} from './config.js';
 import {$,esc,surname} from './util.js';
 import {S,hasNote,rating,ui} from './state.js';
 import {touch} from './sync.js';
-import {BOOKS,BYID,groups,visible} from './data.js';
+import {BOOKS,BYID,groups,visible,baseCount} from './data.js';
 import {badge,card,linkRow,stars,stateBtns} from './cards.js';
 import {refreshBookOv} from './overlay.js';
 export function decades(){const s=new Set();BOOKS.forEach(b=>b.entries.forEach(e=>s.add(Math.floor(e.year/10)*10)));return [...s].sort((a,b)=>b-a)}
@@ -18,6 +18,7 @@ export function shellLibrary(){
       <label class="f">Show<select id="result"><option value="all">Winners &amp; finalists</option><option value="winner">Winners only</option></select></label>
       <label class="f">Status<select id="read"><option value="all">All books</option><option value="unread">Not read yet</option><option value="reading">Reading now</option><option value="read">Already read</option><option value="rated">Rated by me</option></select></label>
       <label class="f">Decade<select id="decade"><option value="">All years</option>${decades().map(d=>`<option value="${d}">${d}s</option>`).join('')}</select></label>
+      <label class="f">Source<select id="source"><option value="all">All books</option><option value="awards">Award lists</option><option value="mine">My books</option></select></label>
       <label class="f">Group by<select id="group"><option value="none">No grouping</option><option value="year">Year</option><option value="decade">Decade</option><option value="award">Award</option><option value="author">Author</option></select></label>
       <label class="f">Sort<select id="sort"><option value="best">Most honoured</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="title">Title A–Z</option><option value="author">Author A–Z</option><option value="wins">Most wins</option><option value="rating">My rating</option></select></label>
     </div>
@@ -25,11 +26,11 @@ export function shellLibrary(){
       <div class="pills" id="awardPills">${AWARDS.map(a=>`<button class="pill" data-aw="${esc(a.key)}" style="--c:${a.color}" aria-pressed="false"><i></i>${esc(a.short)}</button>`).join('')}</div></div>
     <div class="row" id="authorRow"></div>
   </section>
-  <div class="summary"><div id="count"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" data-act="surprise">🎲 Surprise me</button><button class="btn sm" data-act="addall">＋ Add all results to a list</button><button class="btn sm ghost" data-act="reset">Reset filters</button></div></div>
+  <div class="summary"><div id="count"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" data-act="addbook">＋ Add a book</button><button class="btn sm" data-act="surprise">🎲 Surprise me</button><button class="btn sm" data-act="addall">＋ Add all results to a list</button><button class="btn sm ghost" data-act="reset">Reset filters</button></div></div>
   <div id="results"></div>`;
-  $('#result').value=ui.result;$('#read').value=ui.read;$('#decade').value=ui.decade;$('#group').value=ui.group;$('#sort').value=ui.sort;
+  $('#result').value=ui.result;$('#read').value=ui.read;$('#decade').value=ui.decade;$('#group').value=ui.group;$('#sort').value=ui.sort;$('#source').value=ui.source;
   $('#q').addEventListener('input',e=>{ui.q=e.target.value;ui.limit=PAGE;renderResults()});
-  for(const id of ['result','read','decade','group','sort'])$('#'+id).addEventListener('change',e=>{ui[id]=e.target.value;ui.limit=PAGE;renderResults()});
+  for(const id of ['result','read','decade','source','group','sort'])$('#'+id).addEventListener('change',e=>{ui[id]=e.target.value;ui.limit=PAGE;renderResults()});
 }
 export function renderResults(){
   if(ui.tab!=='library')return;
@@ -64,7 +65,7 @@ export function renderLists(){
   else{
     let books=cur.books.map(id=>BYID.get(id)).filter(Boolean);
     const manual=ui.lsort==='manual';
-    const yr=b=>Math.min(...b.entries.map(e=>e.year));
+    const yr=b=>b.first;
     if(!manual){const F={title:(a,b)=>a.title.localeCompare(b.title),author:(a,b)=>surname(a.author).localeCompare(surname(b.author))||a.title.localeCompare(b.title),oldest:(a,b)=>yr(a)-yr(b),newest:(a,b)=>yr(b)-yr(a),unread:(a,b)=>(S.read.has(a.id)-S.read.has(b.id))}[ui.lsort];books=books.slice().sort(F)}
     const done=books.filter(b=>S.read.has(b.id)).length;
     main=`<section class="panel lmain">
@@ -90,7 +91,7 @@ export function renderAbout(){
   const counts=AWARDS.map(a=>{const w=BOOKS.reduce((n,b)=>n+b.entries.filter(e=>e.award===a.key&&e.result==='winner').length,0);const t=BOOKS.reduce((n,b)=>n+b.entries.filter(e=>e.award===a.key).length,0);return `<li><b style="color:${a.color}">${esc(a.short)}</b> — ${esc(a.key)}: ${w} winners, ${t-w} finalists recorded</li>`}).join('');
   $('#app').innerHTML=`<section class="panel about">
     <h2>What’s in here</h2>
-    <p>${BOOKS.length} distinct novels across seven science-fiction awards. Category covered: <b>Best Novel</b> only (the closest equivalent for each award).</p>
+    <p>${baseCount()} distinct novels across seven science-fiction awards. Category covered: <b>Best Novel</b> only (the closest equivalent for each award).</p>
     <ul>${counts}</ul>
     <h2>Known gaps &amp; quirks</h2>
     <ul>

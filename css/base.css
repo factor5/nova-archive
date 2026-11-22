@@ -218,3 +218,8 @@ table.aw td.wn,table.aw td.fn{white-space:nowrap}
 .ocover{width:96px;height:auto;max-height:150px;object-fit:cover;border-radius:6px;border:1px solid var(--line2);flex:none;background:var(--field)}
 .otext{min-width:0;display:flex;flex-direction:column;gap:6px}
 .otext p{margin:0;font-size:14px;line-height:1.5;color:var(--ink2)}
+.b.mine{border-color:var(--cyan);color:var(--cyan);background:rgba(var(--acc),.1)}
+#abRes{display:flex;flex-direction:column;gap:6px;margin:8px 0 10px}#abRes:empty{margin:0}
+#abRes .mrow{margin:0;font-size:14px}
+#abRes small{color:var(--muted)}
+.abmsg{color:var(--amber);font-size:14px;margin:6px 0}

@@ -49,3 +49,8 @@ export async function fetchInfo(b){
 }
 export const coverUrl=n=>`https://covers.openlibrary.org/b/id/${n}-M.jpg`;
 export const workUrl=k=>API+k;
+/* Free-text search for the "Add a book" form. Resolves to [{title,author,year}]. Rejects on network errors. */
+export async function searchBooks(q){
+  const r=await getJSON(`${API}/search.json?q=${encodeURIComponent(q)}&limit=6&fields=key,title,author_name,first_publish_year`);
+  return (r.docs||[]).filter(d=>d.title&&d.author_name&&d.author_name.length).map(d=>({title:d.title,author:d.author_name[0],year:d.first_publish_year||0}));
+}

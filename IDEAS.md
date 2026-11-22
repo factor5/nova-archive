@@ -8,6 +8,7 @@ A scratchpad for features to add later. Move items to "Done" when they ship.
 - Now reading row, star ratings, notes
 - Back-to-top button
 - Covers, descriptions and subjects on the book page (Open Library, optional)
+- Add your own books (manual form, Open Library search and fill, edit and delete, Source filter)
 - Per-book page (awards, your shelf, author's other books, same-year competitors)
 - Themes: Nova (dark), Paper (light), Terminal, Dune and Auto, with a theme picker (synced with your account)
 
@@ -40,3 +41,8 @@ A scratchpad for features to add later. Move items to "Done" when they ship.
 - Short stories and novellas as an optional second data set
 - Notifications when a new award winner is announced
 - Compare reading progress with a friend
+
+## Follow-ups for added books
+- Paste a list of titles to add many at once
+- Merge an added book with its award entry if it later wins an award
+- Import from a Goodreads CSV export

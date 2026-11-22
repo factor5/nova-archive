@@ -2,10 +2,11 @@
 import {LS,PAGE} from './config.js';
 import {applyTheme} from './theme.js';
 import {THEMES} from './config.js';
-export const S={read:new Set(),lists:[],reading:{},meta:{},theme:'',updatedAt:0};
-export const ui={tab:'library',q:'',awards:new Set(),result:'all',read:'all',decade:'',sort:'best',group:'none',limit:PAGE,listId:null,author:'',lsort:'manual',page:null};
-export const serialize=()=>({v:2,read:[...S.read],lists:S.lists,reading:S.reading,meta:S.meta,theme:S.theme,updatedAt:S.updatedAt});
-export function loadFrom(o){S.read=new Set(Array.isArray(o.read)?o.read:[]);S.lists=Array.isArray(o.lists)?o.lists:[];S.reading=(o.reading&&typeof o.reading==='object'&&!Array.isArray(o.reading))?o.reading:{};S.meta=(o.meta&&typeof o.meta==='object'&&!Array.isArray(o.meta))?o.meta:{};S.theme=THEMES.some(t=>t[0]===o.theme)?o.theme:'';S.updatedAt=o.updatedAt||0;try{if(S.theme)localStorage.setItem('nova-theme',S.theme)}catch(e){}applyTheme()}
+import {rebuild} from './data.js';
+export const S={read:new Set(),lists:[],reading:{},meta:{},custom:[],theme:'',updatedAt:0};
+export const ui={tab:'library',q:'',awards:new Set(),result:'all',read:'all',decade:'',sort:'best',group:'none',limit:PAGE,listId:null,author:'',lsort:'manual',page:null,source:'all'};
+export const serialize=()=>({v:2,read:[...S.read],lists:S.lists,reading:S.reading,meta:S.meta,custom:S.custom,theme:S.theme,updatedAt:S.updatedAt});
+export function loadFrom(o){S.read=new Set(Array.isArray(o.read)?o.read:[]);S.lists=Array.isArray(o.lists)?o.lists:[];S.reading=(o.reading&&typeof o.reading==='object'&&!Array.isArray(o.reading))?o.reading:{};S.meta=(o.meta&&typeof o.meta==='object'&&!Array.isArray(o.meta))?o.meta:{};S.custom=Array.isArray(o.custom)?o.custom.filter(c=>c&&typeof c.id==='string'&&typeof c.title==='string'&&typeof c.author==='string'):[];rebuild();S.theme=THEMES.some(t=>t[0]===o.theme)?o.theme:'';S.updatedAt=o.updatedAt||0;try{if(S.theme)localStorage.setItem('nova-theme',S.theme)}catch(e){}applyTheme()}
 export function loadLocal(){try{const raw=localStorage.getItem(LS);if(raw)loadFrom(JSON.parse(raw))}catch(e){}}
 export const rating=id=>(S.meta[id]&&S.meta[id].r)||0;
 export const hasNote=id=>!!(S.meta[id]&&S.meta[id].n);

@@ -1,5 +1,6 @@
 /* User actions: click and keyboard handlers, list and reading operations. */
 import {setTheme,themePicker} from './theme.js';
+import {openAddBook,pickResult,saveNew} from './addbook.js';
 import {PAGE} from './config.js';
 import {$,esc,toast,uid} from './util.js';
 import {S,rating,setMeta,ui} from './state.js';
@@ -25,6 +26,9 @@ document.addEventListener('click',ev=>{
   if(act==='gobook'){ev.preventDefault();closeOv();location.hash='#book/'+encodeURIComponent(v||id);return}
   if(act==='back'){ev.preventDefault();if(history.length>1)history.back();else location.hash='#library';return}
   if(act==='gotolist'){ui.listId=v;location.hash='#lists';return}
+  if(act==='addbook'){openAddBook();return}
+  if(act==='abpick'){pickResult(v);return}
+  if(act==='absave'){saveNew();return}
   if(act==='settheme'){setTheme(v);themePicker();return}
   if(act==='ovclose2'){closeOv();renderAll();return}
   if(act==='openbook'){bookOv(id);return}
@@ -40,7 +44,7 @@ document.addEventListener('click',ev=>{
   if(act==='author'){closeOv();ui.author=v;ui.limit=PAGE;if(ui.tab!=='library'){location.hash='#library'}else renderResults();window.scrollTo({top:0,behavior:'smooth'});return}
   if(act==='clearauthor'){ui.author='';renderResults();return}
   if(act==='more'){ui.limit+=PAGE;renderResults();return}
-  if(act==='reset'){Object.assign(ui,{q:'',result:'all',read:'all',decade:'',sort:'best',group:'none',limit:PAGE,author:''});ui.awards.clear();$('#app').innerHTML='';renderAll();return}
+  if(act==='reset'){Object.assign(ui,{q:'',result:'all',read:'all',decade:'',source:'all',sort:'best',group:'none',limit:PAGE,author:''});ui.awards.clear();$('#app').innerHTML='';renderAll();return}
   if(act==='addlist'){pickIds=[id];const b=BYID.get(id);listPicker(pickIds,'Add to reading list',b.title+' — '+b.author);return}
   if(act==='addall'){const ids=visible().map(b=>b.id);if(!ids.length){toast('No books to add');return}pickIds=ids;listPicker(ids,'Add all results to a list',ids.length+' books currently shown by your filters');return}
   if(act==='toggle'){const l=S.lists.find(x=>x.id===v);const i=l.books.indexOf(pickIds[0]);i<0?l.books.push(pickIds[0]):l.books.splice(i,1);touch();listPicker(pickIds,'Add to reading list',BYID.get(pickIds[0]).title+' — '+BYID.get(pickIds[0]).author);return}

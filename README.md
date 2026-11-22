@@ -8,6 +8,7 @@ A personal web app for browsing science-fiction novel awards, tracking what you'
 
 - Winners **and finalists** (novels only) for seven awards: Hugo, Nebula, Arthur C. Clarke, John W. Campbell Memorial, Locus (SF Novel), Philip K. Dick and BSFA. 1,329 books in total.
 - Browse and filter by year, decade, award, author, winners only, or read status. Group and sort the results.
+- Add your own books that aren't in the award lists (manually, or by searching Open Library and filling the form), then treat them like any other book: lists, reading status, ratings, notes. A "Source" filter shows award books, your books, or both.
 - Mark books as read, start reading them (shown in a "Now reading" row), rate them 1–5 stars and keep private notes.
 - Build reading lists, reorder or sort them, and copy them as text.
 - A page for every book (tap its title): all awards, your rating, notes and finish date, other books by the author, and the books it competed against.
@@ -26,7 +27,7 @@ A static site, with no build step and no framework.
 | `css/base.css` | Layout and components (colours come from theme tokens) |
 | `css/theme-*.css` | One file per theme (Nova, Paper, Terminal, Dune): design tokens and overrides |
 | `js/main.js` | Entry point (ES module): loads data, wires the page, starts sync |
-| `js/*.js` | Modules: `config`, `util`, `state`, `theme`, `sync` (Firebase), `data` (filtering and sorting), `cards`, `overlay`, `views`, `bookpage`, `enrich` (Open Library lookup), `actions` |
+| `js/*.js` | Modules: `config`, `util`, `state`, `theme`, `sync` (Firebase), `data` (filtering and sorting), `cards`, `overlay`, `views`, `bookpage`, `enrich` (Open Library lookup), `addbook` (your own books), `actions` |
 | `data.json` | The award data, one book per line |
 | `firebase-config.js` | Firebase web config (public by design; access is limited by Firestore rules) |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Offline support and installability (PWA) |
@@ -34,6 +35,7 @@ A static site, with no build step and no framework.
 
 - **Hosting:** GitHub Pages, served from the `main` branch root.
 - **Persistence:** Firebase Authentication (Google sign-in) and Cloud Firestore, one document per user at `users/<uid>`. Without signing in, progress is kept in the browser's local storage only.
+- **Your own books:** stored in the `custom` list of your Firestore document with the rest of your data (ids start with `my--`); `data.json` is never modified.
 - **Open Library:** cover, description and subjects are fetched in the browser from `openlibrary.org` / `covers.openlibrary.org` when a book page opens. Nothing is stored in Firebase, and a failed lookup simply hides the section.
 - **Data:** award results come from Wikipedia list pages and sfadb (Locus Awards, 2026).
 

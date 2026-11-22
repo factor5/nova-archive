@@ -4,10 +4,16 @@ import {norm,surname} from './util.js';
 import {S,rating,ui} from './state.js';
 export let BOOKS=[],BYID=new Map();
 /* ---------- data prep ---------- */
+let BASE=[];
+export const baseCount=()=>BASE.length;
+/* Rebuild the full book list: award data plus the books you added (S.custom). */
+export function rebuild(){
+  const mine=S.custom.map(c=>({id:c.id,title:c.title,author:c.author,entries:[],custom:true,year:c.year||0,added:c.added||0,wins:0,noms:0,first:c.year||0,last:c.year||0,_n:norm(c.title+' '+c.author),_s:surname(c.author)}));
+  BOOKS=BASE.concat(mine);BYID=new Map(BOOKS.map(b=>[b.id,b]));
+}
 export function prep(list){
-  BOOKS=list;BYID=new Map();
-  for(const b of BOOKS){
-    BYID.set(b.id,b);
+  BASE=list;
+  for(const b of BASE){
     b._n=norm(b.title+' '+b.author);
     b.wins=b.entries.filter(e=>e.result==='winner').length;
     b.noms=b.entries.length;
@@ -16,6 +22,7 @@ export function prep(list){
     b.entries.sort((x,y)=>(y.result==='winner')-(x.result==='winner')||x.year-y.year);
     b._s=surname(b.author);
   }
+  rebuild();
 }
 
 /* ---------- filtering ---------- */
@@ -23,6 +30,13 @@ export function matchEntry(e){
   if(ui.awards.size&&!ui.awards.has(e.award))return false;
   if(ui.result==='winner'&&e.result!=='winner')return false;
   if(ui.decade){const d=+ui.decade;if(e.year<d||e.year>d+9)return false}
+  return true;
+}
+/* Books you added have no awards, so award and winner filters hide them; the decade filter uses their year. */
+function matchBook(b){
+  if(!b.custom)return b.entries.some(matchEntry);
+  if(ui.awards.size||ui.result==='winner')return false;
+  if(ui.decade){const d=+ui.decade;if(!b.year||b.year<d||b.year>d+9)return false}
   return true;
 }
 export function visible(){
@@ -35,7 +49,9 @@ export function visible(){
     if(ui.read==='unread'&&r)return false;
     if(ui.read==='reading'&&!S.reading[b.id])return false;
     if(ui.read==='rated'&&!rating(b.id))return false;
-    return b.entries.some(matchEntry);
+    if(ui.source==='awards'&&b.custom)return false;
+    if(ui.source==='mine'&&!b.custom)return false;
+    return matchBook(b);
   });
 }
 export function sortBooks(arr){
@@ -56,6 +72,7 @@ export function groups(arr){
   const add=(k,b)=>{if(!m.has(k))m.set(k,[]);const a=m.get(k);if(!a.includes(b))a.push(b)};
   for(const b of arr){
     if(ui.group==='author'){add(b.author,b);continue}
+    if(b.custom){add(ui.group==='year'?(b.year?String(b.year):'No year'):ui.group==='decade'?(b.year?Math.floor(b.year/10)*10+'s':'No year'):'My books',b);continue}
     for(const e of b.entries){
       if(!matchEntry(e))continue;
       if(ui.group==='year')add(String(e.year),b);
@@ -64,8 +81,8 @@ export function groups(arr){
     }
   }
   let keys=[...m.keys()];
-  if(ui.group==='year'||ui.group==='decade')keys.sort((a,b)=>parseInt(b)-parseInt(a));
-  else if(ui.group==='award')keys.sort((a,b)=>AWARDS.findIndex(x=>x.key===a)-AWARDS.findIndex(x=>x.key===b));
+  if(ui.group==='year'||ui.group==='decade')keys.sort((a,b)=>(isNaN(parseInt(a))-isNaN(parseInt(b)))||parseInt(b)-parseInt(a));
+  else if(ui.group==='award'){const ix=k=>{const i=AWARDS.findIndex(x=>x.key===k);return i<0?99:i};keys.sort((a,b)=>ix(a)-ix(b))}
   else keys.sort((a,b)=>surname(a).localeCompare(surname(b)));
   const rev=ui.sort==='oldest';
   return keys.map(k=>{

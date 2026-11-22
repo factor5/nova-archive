@@ -1,31 +1,33 @@
 /* Per-book page (#book/<id>): awards, your shelf (status, rating, dates, notes), author and same-year books. */
 import {AW} from './config.js';
-import {$,esc} from './util.js';
+import {$,esc,toast} from './util.js';
 import {S,ui,setMeta} from './state.js';
 import {BOOKS,BYID} from './data.js';
 import {linkRow,stars,stateBtns} from './cards.js';
 import {touch} from './sync.js';
+import {updateCustom,deleteCustom} from './addbook.js';
 import {cached,fetchInfo,enrichOn,coverUrl,workUrl} from './enrich.js';
 const href=id=>'#book/'+encodeURIComponent(id);
 const link=(b,extra='')=>`<a class="bl" href="${esc(href(b.id))}" data-act="gobook" data-v="${esc(b.id)}">${esc(b.title)}</a>${extra}`;
 const mark=id=>S.read.has(id)?'<span class="mk ok" title="Read">✓</span>':S.reading[id]?'<span class="mk go" title="Reading now">▶</span>':'';
+const yrs=o=>o.first?(o.first===o.last?o.first:o.first+'–'+o.last):'';
 const day=ts=>new Date(ts).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
 const iso=ts=>{const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-function infoHTML(d){
+function infoHTML(d,b){
   if(!d)return '';
   return `<div class="oinfo">${d.cover?`<img class="ocover" src="${esc(coverUrl(d.cover))}" alt="Cover of the book" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`:''}
     <div class="otext">${d.desc?`<p>${esc(d.desc).replace(/\n/g,'<br>')}</p>`:''}
-    ${d.year?`<div class="bsum">First published ${d.year}</div>`:''}
+    ${d.year&&!(b&&b.custom&&b.year)?`<div class="bsum">First published ${d.year}</div>`:''}
     ${d.subjects.length?`<div class="bl2">${d.subjects.map(s=>`<span class="chip">${esc(s)}</span>`).join(' ')}</div>`:''}
     <div class="by">Source: <a class="lk" href="${esc(workUrl(d.key))}" target="_blank" rel="noopener noreferrer">Open Library</a></div></div></div>`;
 }
 function loadInfo(b){
   const box=$('#bookInfo');if(!box||!enrichOn())return;
   const c=cached(b.id);
-  if(c!==undefined){box.innerHTML=infoHTML(c);box.hidden=!c;return}
+  if(c!==undefined){box.innerHTML=infoHTML(c,b);box.hidden=!c;return}
   if(!navigator.onLine)return;
   box.hidden=false;box.innerHTML='<div class="by">Looking up cover and description…</div>';
-  fetchInfo(b).then(d=>{if(ui.page===b.id&&$('#bookInfo')){const x=$('#bookInfo');x.innerHTML=infoHTML(d);x.hidden=!d}},
+  fetchInfo(b).then(d=>{if(ui.page===b.id&&$('#bookInfo')){const x=$('#bookInfo');x.innerHTML=infoHTML(d,b);x.hidden=!d}},
     ()=>{if(ui.page===b.id&&$('#bookInfo'))$('#bookInfo').hidden=true});
 }
 export function renderBookPage(){
@@ -50,7 +52,7 @@ export function renderBookPage(){
     <section class="panel bhead">
       <h2>${esc(b.title)}</h2>
       <button class="author" data-act="author" data-v="${esc(b.author)}" title="Show all books by this author">${esc(b.author)}</button>
-      <div class="bsum">${b.wins} win${b.wins===1?'':'s'} · ${b.noms} nomination${b.noms===1?'':'s'} · ${b.first===b.last?b.first:b.first+'–'+b.last}</div>
+      <div class="bsum">${b.custom?`Added by you${b.year?' · first published '+b.year:''}`:`${b.wins} win${b.wins===1?'':'s'} · ${b.noms} nomination${b.noms===1?'':'s'} · ${b.first===b.last?b.first:b.first+'–'+b.last}`}</div>
       ${linkRow(b)}
       <div id="bookInfo" hidden></div>
       <div class="acts">${stateBtns(id)}<button class="btn sm ghost" data-act="addlist">＋ List${lists.length?' ('+lists.length+')':''}</button></div>
@@ -62,14 +64,29 @@ export function renderBookPage(){
         <label class="f">My notes<textarea id="pageNote" maxlength="2000" rows="5" placeholder="Thoughts, favourite quotes, who recommended it…">${esc(m.n||'')}</textarea></label>
         ${lists.length?`<div class="bl2">On lists: ${lists.map(l=>`<button class="chip" data-act="gotolist" data-v="${esc(l.id)}">${esc(l.name)}</button>`).join(' ')}</div>`:''}
       </section>
-      <section class="panel"><h3>Awards</h3>
+      ${b.custom?`<section class="panel"><h3>Your book details</h3>
+        <label class="f">Title<input type="text" id="cbT" maxlength="120" value="${esc(b.title)}"></label>
+        <label class="f">Author<input type="text" id="cbA" maxlength="80" value="${esc(b.author)}"></label>
+        <label class="f">First published (year, optional)<input type="text" id="cbY" inputmode="numeric" maxlength="4" value="${b.year||''}"></label>
+        <div class="abmsg" id="cbMsg" role="status"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" id="cbSave">Save details</button><button class="btn sm warn" id="cbDel">Delete book</button></div>
+      </section>`:`<section class="panel"><h3>Awards</h3>
         <table class="aw"><thead><tr><th>Award</th><th>Year</th><th></th></tr></thead><tbody>${rows}</tbody></table>
-      </section>
+      </section>`}
     </div>
-    ${mine.length?`<section class="panel"><h3>More by ${esc(b.author)}</h3><ul class="blist">${mine.map(o=>`<li>${link(o,` <span class="by">${o.first===o.last?o.first:o.first+'–'+o.last}</span>`)}${o.wins?` <span class="wn">${'★'.repeat(Math.min(o.wins,5))}</span>`:''} ${mark(o.id)}</li>`).join('')}</ul></section>`:''}
+    ${mine.length?`<section class="panel"><h3>More by ${esc(b.author)}</h3><ul class="blist">${mine.map(o=>`<li>${link(o,` <span class="by">${yrs(o)}</span>`)}${o.wins?` <span class="wn">${'★'.repeat(Math.min(o.wins,5))}</span>`:''} ${mark(o.id)}</li>`).join('')}</ul></section>`:''}
     ${same?`<section class="panel"><h3>Same awards, same year</h3><div class="sygrid">${same}</div></section>`:''}
   </div>`;
   loadInfo(b);
+  const cs=$('#cbSave');
+  if(cs){
+    cs.addEventListener('click',()=>{const m=updateCustom(id,$('#cbT').value,$('#cbA').value,$('#cbY').value);if(m&&$('#cbMsg'))$('#cbMsg').textContent=m});
+    const cd=$('#cbDel');let tm=0;
+    cd.addEventListener('click',()=>{
+      if(cd.dataset.sure){deleteCustom(id);toast('Book deleted');location.hash='#library';return}
+      cd.dataset.sure='1';cd.textContent='Tap again to delete';clearTimeout(tm);tm=setTimeout(()=>{if(cd.isConnected){delete cd.dataset.sure;cd.textContent='Delete book'}},3000);
+    });
+  }
   const nt=$('#pageNote');
   if(nt)nt.addEventListener('change',()=>{setMeta(id,'n',nt.value.trim());touch()});
   const fin=$('#pageFin');
