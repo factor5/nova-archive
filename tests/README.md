@@ -115,7 +115,8 @@ the browser, mocks and local web server in `tests/conftest.py`.
 ```
 pip install -r tests/requirements.txt
 python -m playwright install chromium
-python -m pytest tests -m "smoke and not manual" -n 4      # what CI runs
+python -m pytest tests -m "smoke and not manual" -n 4      # the CI "smoke" job
+python -m pytest tests -m "not smoke and not manual and not wip" -n 4   # the CI "regression" job
 python -m pytest tests -k "LIB-01 or dune"                  # a single scenario or topic
 ```
 
@@ -124,11 +125,12 @@ python -m pytest tests -k "LIB-01 or dune"                  # a single scenario 
 Run one feature file with its number: `python -m pytest tests -m f09`.
 That is intentional: they are the backlog. To automate one, add the missing steps to `steps/common.py`
 (reuse the existing ones where the wording matches) and, when it passes reliably, nothing else is needed:
-CI selects by tag. Next planned step is to run `regression` on merges to `main` once most of them pass.
+CI selects by tag: every scenario that is not `@manual` or `@wip` runs on every pull request, split into the two jobs above.
 
 CI (`.github/workflows/tests.yml`) runs on every pull request and every push to `main`:
-facts check, repository checks, then the smoke scenarios. To make it a gate, enable branch protection on
-`main` and require the **tests / smoke** check.
+two parallel jobs. **smoke**: facts check, repository checks, then the smoke scenarios (the fast gate).
+**regression**: all remaining scenarios. The branch ruleset requires **tests / smoke**; add **tests / regression**
+as a second required check to make the full suite a gate too.
 
 Later: Firestore rules tests with the Firebase emulator (`@SY-30`) and visual snapshots per theme.
 

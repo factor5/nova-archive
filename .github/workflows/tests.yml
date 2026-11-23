@@ -37,3 +37,28 @@ jobs:
         if: failure()
         run: |
           echo "Re-run locally: python -m pytest tests -m 'smoke and not manual' -x"
+
+  # Everything that is not in the smoke set. Runs in parallel with "smoke", so a pull request takes as long as the slower of the two.
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: tests/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install test tools
+        run: |
+          pip install -r tests/requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: All other scenarios in a real browser
+        run: python -m pytest tests -m "not smoke and not manual and not wip" -n auto
+      - name: Hint for local reproduction
+        if: failure()
+        run: |
+          echo "Re-run locally: python -m pytest tests -m 'not smoke and not manual and not wip' -x"
