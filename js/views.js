@@ -106,6 +106,9 @@ export function renderAbout(){
     <p>In Chrome on Android, open the menu (⋮) and choose <b>Install app</b> or <b>Add to Home screen</b>. It then opens full screen like a normal app and starts even without a connection.</p>
     <h2>Your data</h2>
     <p>“Read” marks and reading lists are saved in your own Firebase project (Cloud Firestore) once you sign in with Google, and sync across your devices. Only the account allowed by your Firestore security rules can read or write them. Without signing in, they are kept in this browser only (the indicator at the top shows which).</p>
+    <h2>Import reading lists</h2>
+    <p>One-time import of the lists from your Google Doc: books that are not in the archive are added to “My books”, and the lists are created. Books and lists you already have are skipped, so it is safe to tap twice.</p>
+    <button class="btn sm" data-act="importlists" id="importBtn">Import reading lists</button> <span id="importMsg" role="status"></span>
     <h2>Covers and descriptions</h2>
     <p>Book pages can look up a cover, description and subjects on <a class="lk" href="https://openlibrary.org" target="_blank" rel="noopener noreferrer">Open Library</a>. This happens only when you open a book page, and sends just the title and author to Open Library. Results are cached in this browser.</p>
     <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="olToggle"${enrichOn()?' checked':''}> Look up covers and descriptions</label>

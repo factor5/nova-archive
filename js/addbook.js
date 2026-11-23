@@ -14,7 +14,7 @@ export function findDuplicate(title,author,exceptId){
   const t=norm(title),s=surname(author);
   return BOOKS.find(b=>b.id!==exceptId&&norm(b.title)===t&&b._s===s)||null;
 }
-function makeId(t,a){const base='my--'+slug(t)+'--'+slug(surname(a));let id=base,n=2;while(BYID.has(id))id=base+'-'+n++;return id}
+export function makeId(t,a){const base='my--'+slug(t)+'--'+slug(surname(a));let id=base,n=2;while(BYID.has(id))id=base+'-'+n++;return id}
 export function openAddBook(){
   found=[];
   openOv(`<h3>Add a book</h3><p>Not in the award lists? Add it to your library.</p>

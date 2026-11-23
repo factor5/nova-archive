@@ -1,6 +1,7 @@
 /* User actions: click and keyboard handlers, list and reading operations. */
 import {setTheme,themePicker} from './theme.js';
 import {openAddBook,pickResult,saveNew} from './addbook.js';
+import {runImport} from './importlists.js';
 import {PAGE} from './config.js';
 import {$,esc,toast,uid} from './util.js';
 import {S,rating,setMeta,ui} from './state.js';
@@ -27,6 +28,7 @@ document.addEventListener('click',ev=>{
   if(act==='back'){ev.preventDefault();if(history.length>1)history.back();else location.hash='#library';return}
   if(act==='gotolist'){ui.listId=v;location.hash='#lists';return}
   if(act==='addbook'){openAddBook();return}
+  if(act==='importlists'){runImport();return}
   if(act==='abpick'){pickResult(v);return}
   if(act==='absave'){saveNew();return}
   if(act==='settheme'){setTheme(v);themePicker();return}
