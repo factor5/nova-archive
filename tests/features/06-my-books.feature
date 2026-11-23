@@ -179,3 +179,20 @@ Feature: My own books
     Given I added "Convenience Store Woman"
     When I open the "About" tab
     Then the award totals are the same as before
+
+  # ---------- one-time import of reading lists ----------
+
+  @MB-50
+  Scenario: Import reading lists from the bundled file
+    When I open the "About" tab
+    And I tap "Import reading lists"
+    Then the import reports the books added and the lists created
+    And the saved data has every list from the import file
+    And every imported book is in the library
+
+  @MB-51
+  Scenario: Importing twice adds nothing
+    Given I imported the reading lists
+    When I tap "Import reading lists"
+    Then the import reports 0 books added, 0 lists created and 0 entries added
+

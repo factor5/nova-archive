@@ -1,0 +1,727 @@
+{
+ "about": "One-time import of reading lists from the Google Doc \"фантастика – списък\" (Nov 2026). Books already in the archive are referenced by id; others are added to My books (no year). Safe to run more than once.",
+ "lists": [
+  {
+   "name": "Start a series",
+   "items": [
+    {
+     "title": "Red Rising",
+     "author": "Pierce Brown"
+    },
+    {
+     "title": "Golden Son",
+     "author": "Pierce Brown"
+    },
+    {
+     "title": "Morning Star",
+     "author": "Pierce Brown"
+    },
+    {
+     "title": "Iron Gold",
+     "author": "Pierce Brown"
+    },
+    {
+     "title": "Dark Age",
+     "author": "Pierce Brown"
+    },
+    {
+     "title": "Light Bringer",
+     "author": "Pierce Brown"
+    },
+    {
+     "title": "Mistborn: The Final Empire",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "The Well of Ascension",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "The Hero of Ages",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "The Alloy of Law",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "Shadows of Self",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "The Bands of Mourning",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "The Lost Metal",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "The Way of Kings",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "Words of Radiance",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "Oathbringer",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "Rhythm of War",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "Wind and Truth",
+     "author": "Brandon Sanderson"
+    },
+    {
+     "title": "The Name of the Wind",
+     "author": "Patrick Rothfuss"
+    },
+    {
+     "title": "The Wise Man's Fear",
+     "author": "Patrick Rothfuss"
+    },
+    {
+     "id": "the-fifth-season--n-k-jemisin",
+     "title": "The Fifth Season"
+    },
+    {
+     "id": "the-obelisk-gate--n-k-jemisin",
+     "title": "The Obelisk Gate"
+    },
+    {
+     "id": "the-stone-sky--n-k-jemisin",
+     "title": "The Stone Sky"
+    },
+    {
+     "title": "The Gunslinger",
+     "author": "Stephen King"
+    },
+    {
+     "title": "The Drawing of the Three",
+     "author": "Stephen King"
+    },
+    {
+     "title": "The Waste Lands",
+     "author": "Stephen King"
+    },
+    {
+     "title": "Wizard and Glass",
+     "author": "Stephen King"
+    },
+    {
+     "title": "Wolves of the Calla",
+     "author": "Stephen King"
+    },
+    {
+     "title": "Song of Susannah",
+     "author": "Stephen King"
+    },
+    {
+     "title": "The Dark Tower",
+     "author": "Stephen King"
+    },
+    {
+     "title": "The Wind Through the Keyhole",
+     "author": "Stephen King"
+    },
+    {
+     "id": "the-shadow-of-the-torturer--gene-wolfe",
+     "title": "The Shadow of the Torturer"
+    },
+    {
+     "id": "the-claw-of-the-conciliator--gene-wolfe",
+     "title": "The Claw of the Conciliator"
+    },
+    {
+     "id": "the-sword-of-the-lictor--gene-wolfe",
+     "title": "The Sword of the Lictor"
+    },
+    {
+     "id": "the-citadel-of-the-autarch--gene-wolfe",
+     "title": "The Citadel of the Autarch"
+    },
+    {
+     "id": "the-urth-of-the-new-sun--gene-wolfe",
+     "title": "The Urth of the New Sun"
+    },
+    {
+     "title": "Dragonflight",
+     "author": "Anne McCaffrey"
+    },
+    {
+     "title": "Nine Princes in Amber",
+     "author": "Roger Zelazny"
+    },
+    {
+     "title": "The Guns of Avalon",
+     "author": "Roger Zelazny"
+    },
+    {
+     "title": "Sign of the Unicorn",
+     "author": "Roger Zelazny"
+    },
+    {
+     "title": "The Hand of Oberon",
+     "author": "Roger Zelazny"
+    },
+    {
+     "title": "The Courts of Chaos",
+     "author": "Roger Zelazny"
+    },
+    {
+     "title": "Trumps of Doom",
+     "author": "Roger Zelazny"
+    },
+    {
+     "title": "Blood of Amber",
+     "author": "Roger Zelazny"
+    },
+    {
+     "title": "Sign of Chaos",
+     "author": "Roger Zelazny"
+    },
+    {
+     "title": "Knight of Shadows",
+     "author": "Roger Zelazny"
+    },
+    {
+     "title": "Prince of Chaos",
+     "author": "Roger Zelazny"
+    },
+    {
+     "title": "Northworld",
+     "author": "David Drake"
+    },
+    {
+     "title": "Northworld: Vengeance",
+     "author": "David Drake"
+    },
+    {
+     "title": "Northworld: Justice",
+     "author": "David Drake"
+    },
+    {
+     "title": "Intervention",
+     "author": "Julian May"
+    },
+    {
+     "title": "Jack the Bodiless",
+     "author": "Julian May"
+    },
+    {
+     "title": "Diamond Mask",
+     "author": "Julian May"
+    },
+    {
+     "title": "Magnificat",
+     "author": "Julian May"
+    },
+    {
+     "title": "City of the Chasch",
+     "author": "Jack Vance"
+    },
+    {
+     "title": "Servants of the Wankh",
+     "author": "Jack Vance"
+    },
+    {
+     "title": "The Dirdir",
+     "author": "Jack Vance"
+    },
+    {
+     "title": "The Pnume",
+     "author": "Jack Vance"
+    },
+    {
+     "title": "Trullion: Alastor 2262",
+     "author": "Jack Vance"
+    },
+    {
+     "title": "Marune: Alastor 933",
+     "author": "Jack Vance"
+    },
+    {
+     "title": "Wyst: Alastor 1716",
+     "author": "Jack Vance"
+    }
+   ]
+  },
+  {
+   "name": "Classic SF",
+   "items": [
+    {
+     "id": "the-lathe-of-heaven--ursula-k-le-guin",
+     "title": "The Lathe of Heaven"
+    },
+    {
+     "id": "the-dispossessed--ursula-k-le-guin",
+     "title": "The Dispossessed"
+    },
+    {
+     "id": "the-left-hand-of-darkness--ursula-k-le-guin",
+     "title": "The Left Hand of Darkness"
+    },
+    {
+     "id": "the-mote-in-god-s-eye--larry-niven",
+     "title": "The Mote in God's Eye"
+    },
+    {
+     "id": "ringworld--larry-niven",
+     "title": "Ringworld"
+    },
+    {
+     "id": "the-forever-war--joe-haldeman",
+     "title": "The Forever War"
+    },
+    {
+     "id": "where-late-the-sweet-birds-sang--kate-wilhelm",
+     "title": "Where Late the Sweet Birds Sang"
+    },
+    {
+     "id": "on-wings-of-song--thomas-m-disch",
+     "title": "On Wings of Song"
+    },
+    {
+     "id": "a-scanner-darkly--philip-k-dick",
+     "title": "A Scanner Darkly"
+    },
+    {
+     "id": "tower-of-glass--robert-silverberg",
+     "title": "Tower of Glass"
+    },
+    {
+     "id": "the-book-of-skulls--robert-silverberg",
+     "title": "The Book of Skulls"
+    },
+    {
+     "id": "dying-inside--robert-silverberg",
+     "title": "Dying Inside"
+    },
+    {
+     "id": "shadrach-in-the-furnace--robert-silverberg",
+     "title": "Shadrach in the Furnace"
+    },
+    {
+     "id": "lord-of-light--roger-zelazny",
+     "title": "Lord of Light"
+    },
+    {
+     "title": "A Princess of Mars",
+     "author": "Edgar Rice Burroughs"
+    }
+   ]
+  },
+  {
+   "name": "Modern SF to try",
+   "items": [
+    {
+     "title": "We Are Legion (We Are Bob)",
+     "author": "Dennis E. Taylor"
+    },
+    {
+     "title": "For We Are Many",
+     "author": "Dennis E. Taylor"
+    },
+    {
+     "title": "All These Worlds",
+     "author": "Dennis E. Taylor"
+    },
+    {
+     "title": "Heaven's River",
+     "author": "Dennis E. Taylor"
+    },
+    {
+     "title": "Not Till We Are Lost",
+     "author": "Dennis E. Taylor"
+    },
+    {
+     "id": "the-martian--andy-weir",
+     "title": "The Martian"
+    },
+    {
+     "id": "project-hail-mary--andy-weir",
+     "title": "Project Hail Mary"
+    },
+    {
+     "id": "ancillary-justice--ann-leckie",
+     "title": "Ancillary Justice"
+    },
+    {
+     "title": "Oryx and Crake",
+     "author": "Margaret Atwood"
+    },
+    {
+     "title": "MaddAddam",
+     "author": "Margaret Atwood"
+    },
+    {
+     "id": "down-and-out-in-the-magic-kingdom--cory-doctorow",
+     "title": "Down and Out in the Magic Kingdom"
+    },
+    {
+     "id": "perdido-street-station--china-mieville",
+     "title": "Perdido Street Station"
+    },
+    {
+     "id": "cryptonomicon--neal-stephenson",
+     "title": "Cryptonomicon"
+    },
+    {
+     "title": "A Long Time Until Now",
+     "author": "Michael Z. Williamson"
+    }
+   ]
+  },
+  {
+   "name": "Post-apocalyptic series",
+   "items": [
+    {
+     "title": "Metro 2033",
+     "author": "Dmitry Glukhovsky"
+    },
+    {
+     "title": "Metro 2034",
+     "author": "Dmitry Glukhovsky"
+    },
+    {
+     "title": "Metro 2035",
+     "author": "Dmitry Glukhovsky"
+    },
+    {
+     "title": "Wool",
+     "author": "Hugh Howey"
+    },
+    {
+     "title": "Shift",
+     "author": "Hugh Howey"
+    },
+    {
+     "title": "Dust",
+     "author": "Hugh Howey"
+    },
+    {
+     "title": "Mortal Engines",
+     "author": "Philip Reeve"
+    },
+    {
+     "title": "Predator's Gold",
+     "author": "Philip Reeve"
+    },
+    {
+     "title": "Infernal Devices",
+     "author": "Philip Reeve"
+    },
+    {
+     "title": "A Darkling Plain",
+     "author": "Philip Reeve"
+    },
+    {
+     "title": "Sky Lords",
+     "author": "John Brosnan"
+    },
+    {
+     "title": "The Fall of the Sky Lords",
+     "author": "John Brosnan"
+    },
+    {
+     "title": "The Warlords of Heaven",
+     "author": "John Brosnan"
+    },
+    {
+     "title": "The Sword of Shannara",
+     "author": "Terry Brooks"
+    },
+    {
+     "title": "The Cloud Warrior",
+     "author": "Patrick Tilley"
+    },
+    {
+     "title": "The First Family",
+     "author": "Patrick Tilley"
+    },
+    {
+     "title": "Iron Master",
+     "author": "Patrick Tilley"
+    },
+    {
+     "title": "Blood River",
+     "author": "Patrick Tilley"
+    },
+    {
+     "title": "Death-Bringer",
+     "author": "Patrick Tilley"
+    },
+    {
+     "title": "Earth-Thunder",
+     "author": "Patrick Tilley"
+    },
+    {
+     "title": "Life as We Knew It",
+     "author": "Susan Beth Pfeffer"
+    },
+    {
+     "title": "The Dead and the Gone",
+     "author": "Susan Beth Pfeffer"
+    },
+    {
+     "title": "This World We Live In",
+     "author": "Susan Beth Pfeffer"
+    },
+    {
+     "title": "The Shade of the Moon",
+     "author": "Susan Beth Pfeffer"
+    },
+    {
+     "title": "The Passage",
+     "author": "Justin Cronin"
+    },
+    {
+     "title": "The Twelve",
+     "author": "Justin Cronin"
+    },
+    {
+     "title": "The City of Mirrors",
+     "author": "Justin Cronin"
+    },
+    {
+     "title": "Ashes",
+     "author": "Ilsa J. Bick"
+    },
+    {
+     "title": "Shadows",
+     "author": "Ilsa J. Bick"
+    },
+    {
+     "title": "Monsters",
+     "author": "Ilsa J. Bick"
+    },
+    {
+     "title": "Battlefield Earth",
+     "author": "L. Ron Hubbard"
+    },
+    {
+     "id": "the-book-of-koli--m-r-carey",
+     "title": "The Book of Koli"
+    },
+    {
+     "title": "The Trials of Koli",
+     "author": "M. R. Carey"
+    },
+    {
+     "title": "The Fall of Koli",
+     "author": "M. R. Carey"
+    }
+   ]
+  },
+  {
+   "name": "Post-apocalyptic classics",
+   "items": [
+    {
+     "title": "Swan Song",
+     "author": "Robert McCammon"
+    },
+    {
+     "title": "Damnation Alley",
+     "author": "Roger Zelazny"
+    },
+    {
+     "id": "a-canticle-for-leibowitz--walter-m-miller-jr",
+     "title": "A Canticle for Leibowitz"
+    },
+    {
+     "id": "station-eleven--emily-st-john-mandel",
+     "title": "Station Eleven"
+    },
+    {
+     "title": "The Road",
+     "author": "Cormac McCarthy"
+    },
+    {
+     "title": "On the Beach",
+     "author": "Nevil Shute"
+    },
+    {
+     "title": "The Chrysalids",
+     "author": "John Wyndham"
+    },
+    {
+     "title": "The Day of the Triffids",
+     "author": "John Wyndham"
+    },
+    {
+     "title": "The Night of the Triffids",
+     "author": "Simon Clark"
+    },
+    {
+     "title": "The Stand",
+     "author": "Stephen King"
+    },
+    {
+     "title": "The Drowned World",
+     "author": "J. G. Ballard"
+    },
+    {
+     "title": "City",
+     "author": "Clifford D. Simak"
+    },
+    {
+     "title": "Hiero's Journey",
+     "author": "Sterling E. Lanier"
+    },
+    {
+     "title": "The Unforsaken Hiero",
+     "author": "Sterling E. Lanier"
+    },
+    {
+     "id": "the-postman--david-brin",
+     "title": "The Postman"
+    },
+    {
+     "title": "Deus Irae",
+     "author": "Philip K. Dick & Roger Zelazny"
+    }
+   ]
+  },
+  {
+   "name": "Nuclear war",
+   "items": [
+    {
+     "title": "Alas, Babylon",
+     "author": "Pat Frank"
+    },
+    {
+     "title": "Warday",
+     "author": "Whitley Strieber & James Kunetka"
+    },
+    {
+     "title": "Brother in the Land",
+     "author": "Robert Swindells"
+    },
+    {
+     "title": "Level 7",
+     "author": "Mordecai Roshwald"
+    }
+   ]
+  },
+  {
+   "name": "Pandemics and collapse",
+   "items": [
+    {
+     "title": "The Andromeda Strain",
+     "author": "Michael Crichton"
+    },
+    {
+     "title": "Andromeda Evolution",
+     "author": "Daniel H. Wilson"
+    },
+    {
+     "id": "the-girl-with-all-the-gifts--m-r-carey",
+     "title": "The Girl with All the Gifts"
+    },
+    {
+     "title": "World War Z",
+     "author": "Max Brooks"
+    },
+    {
+     "id": "the-dog-stars--peter-heller",
+     "title": "The Dog Stars"
+    },
+    {
+     "title": "Virus",
+     "author": "Daniel Åberg"
+    },
+    {
+     "title": "Earth Abides",
+     "author": "George R. Stewart"
+    },
+    {
+     "id": "lucifer-s-hammer--larry-niven",
+     "title": "Lucifer's Hammer"
+    },
+    {
+     "title": "Dies the Fire",
+     "author": "S. M. Stirling"
+    },
+    {
+     "title": "The Death of Grass",
+     "author": "John Christopher"
+    }
+   ]
+  },
+  {
+   "name": "Climate",
+   "items": [
+    {
+     "id": "the-windup-girl--paolo-bacigalupi",
+     "title": "The Windup Girl"
+    },
+    {
+     "id": "new-york-2140--kim-stanley-robinson",
+     "title": "New York 2140"
+    },
+    {
+     "id": "the-water-knife--paolo-bacigalupi",
+     "title": "The Water Knife"
+    }
+   ]
+  },
+  {
+   "name": "Dystopias",
+   "items": [
+    {
+     "title": "1984",
+     "author": "George Orwell"
+    },
+    {
+     "title": "Fahrenheit 451",
+     "author": "Ray Bradbury"
+    },
+    {
+     "title": "We",
+     "author": "Yevgeny Zamyatin"
+    },
+    {
+     "id": "the-handmaid-s-tale--margaret-atwood",
+     "title": "The Handmaid's Tale"
+    },
+    {
+     "title": "Brave New World",
+     "author": "Aldous Huxley"
+    }
+   ]
+  },
+  {
+   "name": "From Europe and in translation",
+   "items": [
+    {
+     "id": "malevil--robert-merle",
+     "title": "Malevil"
+    },
+    {
+     "title": "Madrapour",
+     "author": "Robert Merle"
+    },
+    {
+     "title": "Charity: Die beste Frau der Space Force",
+     "author": "Wolfgang Hohlbein"
+    },
+    {
+     "title": "Heliopolis",
+     "author": "Haim Oliver"
+    },
+    {
+     "title": "Van Troff's Cylinder",
+     "author": "Janusz A. Zajdel"
+    },
+    {
+     "title": "The Gasp",
+     "author": "Romain Gary"
+    }
+   ]
+  }
+ ]
+}

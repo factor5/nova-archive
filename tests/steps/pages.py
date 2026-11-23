@@ -549,3 +549,46 @@ def _private(env):
         low = u.lower()
         assert 'secretnote' not in low and 'secretlist' not in low and 'u1' not in low.split('?', 1)[-1] and 'rating' not in low and 'uid' not in low, u
         assert set(re.findall(r'[?&]([a-z]+)=', u)) <= {'title', 'author', 'limit', 'fields'}, u
+
+
+# ================================================================ one-time import of reading lists
+IMPORT = json.load(open(__import__('os').path.join(__import__('os').path.dirname(__file__), '..', '..', 'import', 'reading-lists-2026-11.json')))
+
+
+def _import_msg(env): return env.page.locator('#importMsg')
+
+
+@step(r'I tap "Import reading lists"')
+def _tap_import(env):
+    env.page.locator('#importMsg').evaluate("e=>e.textContent=''")
+    env.page.click('#importBtn'); expect(_import_msg(env)).to_contain_text('Done:'); env.page.wait_for_timeout(300)
+
+
+@step(r'I imported the reading lists')
+def _imported(env):
+    go_tab(env, 'about'); _tap_import(env)
+
+
+@step(r'the import reports the books added and the lists created')
+def _report(env):
+    new = sum(1 for l in IMPORT['lists'] for i in l['items'] if 'id' not in i)
+    expect(_import_msg(env)).to_contain_text('%d books added to My books, %d lists created' % (new, len(IMPORT['lists'])))
+
+
+@step(r'the import reports 0 books added, 0 lists created and 0 entries added')
+def _report_zero(env): expect(_import_msg(env)).to_contain_text('0 books added to My books, 0 lists created, 0 entries added')
+
+
+@step(r'the saved data has every list from the import file')
+def _all_lists(env):
+    d = saved(env); got = {l['name']: len(l['books']) for l in d['lists']}
+    assert got == {l['name']: len(l['items']) for l in IMPORT['lists']}, got
+
+
+@step(r'every imported book is in the library')
+def _all_books(env):
+    d = saved(env); ids = {c['id'] for c in d['custom']}
+    from steps.common import BOOK
+    for l in d['lists']:
+        for b in l['books']: assert b in ids or b in {x['id'] for x in DATA}, b
+    assert len(ids) == sum(1 for l in IMPORT['lists'] for i in l['items'] if 'id' not in i)
