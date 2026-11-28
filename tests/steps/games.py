@@ -190,12 +190,42 @@ def _best(env):
     expect(env.page.locator('#bookBest')).to_have_text('Best: %d' % env.final)
 
 
-@step(r'the play area fills the screen below the top bar')
+@step(r'the framed play area fills the screen below the top bar')
 def _fills(env):
     vw, vh = env.page.viewport_size['width'], env.page.viewport_size['height']
     bar = env.page.locator(GAME + ' .gbar').bounding_box()
     c = env.page.locator('#gCanvas').bounding_box()
-    assert abs(c['width'] - vw) <= 1 and abs(c['y'] - (bar['y'] + bar['height'])) <= 1 and abs(c['y'] + c['height'] - vh) <= 1, (bar, c, vw, vh)
+    frame = 40   # the decorative frame may take up to this many pixels on each side
+    assert c['width'] >= vw - 2 * frame and c['y'] >= bar['y'] + bar['height'] - 1, (bar, c, vw, vh)
+    assert c['y'] - (bar['y'] + bar['height']) <= frame and vh - (c['y'] + c['height']) <= frame and c['x'] + c['width'] <= vw, (bar, c, vw, vh)
+
+
+@step(r'the game screen has its decorative frame')
+def _frame(env):
+    assert env.page.evaluate("!!(document.querySelector('link[data-game-css]')||{}).sheet"), 'frame stylesheet did not load'
+    expect(env.page.locator(GAME + ' .gc.tl')).to_be_visible()
+
+
+@step(r'I turn the phone to landscape')
+def _landscape(env):
+    env.page.set_viewport_size({'width': 844, 'height': 390})
+    env.page.wait_for_timeout(600)
+
+
+@step(r'the game is still running with the player on the screen')
+def _still_running(env):
+    phase(env, 'play')
+    st = state(env)
+    c = env.page.locator('#gCanvas').bounding_box()
+    assert st['alive'] and st['y'] > st['storm'], st
+    # world units: the shorter side is 360, so the world is 360 high and wider than tall
+    assert 0 <= st['x'] <= 360 * c['width'] / c['height'] + 1 and 0 <= st['y'] <= 361, (st, c)
+
+
+@step(r'the play area fills the wider screen')
+def _wide(env):
+    c = env.page.locator('#gCanvas').bounding_box()
+    assert c['width'] >= 844 - 80 and c['width'] > c['height'], c
 
 
 @step(r'nothing on the game screen overflows horizontally')

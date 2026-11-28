@@ -2,7 +2,9 @@
    The game module draws in a canvas; everything else here is plain HTML so it stays accessible and testable.
 
    Game module contract (js/games/<slug>.js):
-     export const meta = {background: '#rrggbb', help: ['line', ...]}
+     export const meta = {background: '#rrggbb', help: ['line', ...], intro?: 'line', tips?: {reason: 'line'}, frame?: true}
+       intro: shown at the top of the start screen. tips: shown on the game-over screen for that reason.
+       frame: load css/games/<slug>.css, the game's decorative frame (styles .game-<slug>, .gframe, .gc corners, .gpanel).
      export default function start(k, {seed, canvas, reducedMotion, onScore, onGameOver})
        -> {update(dt), draw(), destroy(), state?()}
    The shell owns the loop: it calls update(dt) only while playing (dt in seconds, small steps), draw() every frame.
@@ -17,7 +19,7 @@ export async function open(g,opts){
   const mod=await import('./'+g.slug+'.js');
   const meta=mod.meta||{};
   const root=document.createElement('div');
-  root.id='gameRoot';root.className='game';
+  root.id='gameRoot';root.className='game game-'+g.slug;
   root.setAttribute('role','dialog');root.setAttribute('aria-modal','true');root.setAttribute('aria-label',g.title);
   root.innerHTML=`<div class="gbar">
       <button type="button" class="gbtn" data-g="back">← Book</button>
@@ -25,7 +27,13 @@ export async function open(g,opts){
       <div class="gscore" aria-live="off"><span>Spice <b id="gScore">0</b></span><span>Best <b id="gBest">${opts.best}</b></span></div>
       <button type="button" class="gbtn" data-g="pause" aria-label="Pause">❚❚</button>
     </div>
-    <div class="gstage"><canvas id="gCanvas" tabindex="0" aria-label="${esc(g.title)} play area"></canvas><div class="gpanel" id="gPanel"></div></div>`;
+    <div class="gframe"><div class="gstage"><canvas id="gCanvas" tabindex="0" aria-label="${esc(g.title)} play area"></canvas><div class="gpanel" id="gPanel"></div></div>
+      <i class="gc tl" aria-hidden="true"></i><i class="gc tr" aria-hidden="true"></i><i class="gc bl" aria-hidden="true"></i><i class="gc br" aria-hidden="true"></i></div>`;
+  let css=null;
+  if(meta.frame){   // wait (briefly) for the frame stylesheet so the game does not flash unstyled
+    css=document.createElement('link');css.rel='stylesheet';css.href='css/games/'+g.slug+'.css';css.dataset.gameCss=g.slug;
+    await new Promise(res=>{css.onload=css.onerror=res;setTimeout(res,1500);document.head.appendChild(css)});
+  }
   document.body.appendChild(root);
   document.documentElement.classList.add('game-open');
   const $=s=>root.querySelector(s);
@@ -53,7 +61,7 @@ export async function open(g,opts){
   }
   const backBtn='<button type="button" class="gbtn ghost" data-g="back">Back to book</button>';
   function showStart(){
-    panel.innerHTML=`<h2>${esc(g.title)}</h2>${(meta.help||[]).map(l=>`<p>${esc(l)}</p>`).join('')}
+    panel.innerHTML=`<h2>${esc(g.title)}</h2>${meta.intro?`<p class="gintro">${esc(meta.intro)}</p>`:''}${(meta.help||[]).map(l=>`<p>${esc(l)}</p>`).join('')}
       <div class="gacts"><button type="button" class="gbtn big" data-g="go">Start</button>${backBtn}</div>`;
     setPhase('start');
   }
@@ -67,7 +75,7 @@ export async function open(g,opts){
     const isNew=opts.saveBest(score);
     if(isNew){bestNow=score;$('#gBest').textContent=score}
     panel.innerHTML=`<h2>${esc(reason||'Game over')}</h2><p class="gbig">Spice: <b id="gFinal">${score}</b></p>
-      <p>${isNew?'New best score!':'Best: '+bestNow}</p>
+      <p>${isNew?'New best score!':'Best: '+bestNow}</p>${meta.tips&&meta.tips[reason]?`<p class="gtip">${esc(meta.tips[reason])}</p>`:''}
       <div class="gacts"><button type="button" class="gbtn big" data-g="again">Play again</button>${backBtn}</div>`;
     setPhase('over');
   }
@@ -109,6 +117,7 @@ export async function open(g,opts){
     try{k.quit()}catch(e){}
     _k.k=null;   // KAPLAY keeps its last instance in module state; clear it so the next Play starts clean (no re-init warning)
     root.remove();
+    if(css)css.remove();
     document.documentElement.classList.remove('game-open');
     if(TEST)delete window.__novaGameState;
     const p=document.getElementById('playBtn');if(p)p.focus({preventScroll:true});

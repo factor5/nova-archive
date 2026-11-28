@@ -1,9 +1,15 @@
-/* Spice Run (Dune): top-down survival, endless score run. Core loop only (see docs/games-spec.md, section 6).
+/* Spice Run (Dune): top-down survival, endless score run. Game spec: docs/games/dune/README.md.
    Collect spice. Moving fast makes noise; noise draws the worm. The storm moves in from the top; spice pushes it back.
    World units: the shorter side of the play area is always 360 units, so the game feels the same on any screen. */
 
 export const meta={
   background:'#d8b57c',
+  frame:true,
+  intro:'Betrayed and hunted, you have fled into the deep desert. The storm that hid you is still at your back, and something vast moves under the sand.',
+  tips:{
+    'Taken by the worm':'Tip: the desert people walk without rhythm. Slow, soft steps do not carry through the sand, so stay inside the inner ring when the worm is near.',
+    'Lost in the storm':'Tip: every spice you gather pushes the storm back. Creeping keeps you safe from the worm, but not from the storm.'
+  },
   help:[
     'Drag anywhere to move (arrow keys or WASD on a keyboard, hold Shift to run).',
     'The further you drag, the faster you go, and the more noise you make. Noise draws the worm.',
@@ -62,8 +68,16 @@ export default function start(k,{seed,canvas,reducedMotion,onScore,onGameOver}){
   const up=e=>{if(e.pointerId!==joy.id)return;joy.id=null;joy.dx=joy.dy=0};
   canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointermove',move);
   canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
-  const onResize=()=>{measure();P.x=clamp(P.x,C.playerR,W-C.playerR);P.y=clamp(P.y,C.playerR,H-C.playerR);for(const s of spice){s.x=clamp(s.x,20,W-20);s.y=clamp(s.y,20,H-20)}};
-  window.addEventListener('resize',onResize);
+  // the canvas is resized by KAPLAY after the window's resize event, so check its size every frame instead
+  let seenW=k.width(),seenH=k.height();
+  // on a resize (e.g. turning the phone) everything keeps its place relative to the screen, so the storm cannot jump onto you
+  const onResize=()=>{
+    seenW=k.width();seenH=k.height();
+    const W0=W,H0=H;measure();const sx=W/W0,sy=H/H0;
+    const fit=(o,r)=>{o.x=clamp(o.x*sx,r,W-r);o.y=clamp(o.y*sy,r,H-r)};
+    fit(P,C.playerR);fit(worm,0);for(const s of spice)fit(s,20);for(const a of worm.trail){a.x*=sx;a.y*=sy}
+    worm.tx*=sx;worm.ty*=sy;storm=storm>0?storm*sy:storm;
+  };
 
   function input(){
     if(joy.id!==null){
@@ -135,6 +149,7 @@ export default function start(k,{seed,canvas,reducedMotion,onScore,onGameOver}){
     meter:k.rgb(60,40,22),quiet:k.rgb(244,236,218),loud:k.rgb(40,24,12)};
   const V=(x,y)=>k.vec2(x,y);
   function draw(){
+    if(k.width()!==seenW||k.height()!==seenH)onResize();
     k.pushTransform();
     if(shake>0){shake=Math.max(0,shake-k.dt());k.pushTranslate(V((R()-0.5)*8*shake/0.35,(R()-0.5)*8*shake/0.35))}
     k.pushScale(V(u,u));
@@ -194,7 +209,6 @@ export default function start(k,{seed,canvas,reducedMotion,onScore,onGameOver}){
     destroy(){
       canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);
       canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',up);
-      window.removeEventListener('resize',onResize);
     }
   };
 }

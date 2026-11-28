@@ -30,7 +30,7 @@ A static site, with no build step and no framework.
 | `js/*.js` | Modules: `config`, `util`, `state`, `theme`, `sync` (Firebase), `data` (filtering and sorting), `cards`, `overlay`, `views`, `bookpage`, `enrich` (Open Library lookup), `addbook` (your own books), `actions` |
 | `data.json` | The award data, one book per line |
 | `firebase-config.js` | Firebase web config (public by design; access is limited by Firestore rules) |
-| `js/games.js`, `js/games/`, `js/vendor/` | Book games (beta, see [`docs/games-spec.md`](docs/games-spec.md)): registry and beta switch, the game shell and games (loaded only on Play), and the KAPLAY engine |
+| `js/games.js`, `js/games/`, `css/games/`, `js/vendor/` | Book games (beta, see [`docs/games/`](docs/games/README.md)): registry and beta switch, the game shell, the games and their decorative frames (loaded only on Play), and the KAPLAY engine |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Offline support and installability (PWA) |
 | `tools/` | Source data, the script that generates `data.json`, and the version bump script |
 

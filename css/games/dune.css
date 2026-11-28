@@ -1,0 +1,38 @@
+/* Spice Run (Dune): decorative frame. Loaded by the game shell only when this game opens (meta.frame).
+   Sandstone and spice palette; a diamond-chain border, eight-point star corners, a banner top bar, parchment panels.
+   All ornaments are drawn here (CSS and inline SVG), no image files. */
+.game-dune{
+  --d-ink:#1c0f07; --d-rust:#3a1f10; --d-rust2:#5a2e14; --d-spice:#d9772b; --d-gold:#e8b45a; --d-sand:#f3e2bd;
+  background:var(--d-rust) repeating-linear-gradient(135deg,rgba(0,0,0,.18) 0 6px,transparent 6px 14px);color:var(--d-sand)}
+
+/* top bar: a banner with a gold rule and a dune-wave edge */
+.game-dune .gbar{position:relative;background:linear-gradient(180deg,var(--d-rust2),var(--d-rust));border-bottom:2px solid var(--d-gold);margin-bottom:8px}
+.game-dune .gbar::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:6px;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='6'%3E%3Cpath d='M0 1 Q6 6 12 1 T24 1' fill='none' stroke='%23e8b45a' stroke-width='1.5'/%3E%3C/svg%3E") repeat-x}
+.game-dune .gtitle{font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;text-transform:uppercase;letter-spacing:.14em;color:var(--d-gold);text-align:center}
+.game-dune .gtitle::before,.game-dune .gtitle::after{content:"◆";color:var(--d-spice);font-size:10px;vertical-align:middle;margin:0 .5em}
+.game-dune .gbar .gbtn{background:transparent;color:var(--d-gold);border-color:var(--d-gold)}
+.game-dune .gscore{color:var(--d-sand)}
+
+/* frame around the play area: a diamond chain on dark rust, with a gold inner rule */
+.game-dune .gframe{margin:0 6px 6px;padding:10px;border-radius:4px;
+  background:var(--d-rust) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Crect width='20' height='20' fill='%233a1f10'/%3E%3Cpath d='M10 3 L17 10 L10 17 L3 10 Z' fill='none' stroke='%23e8b45a' stroke-width='1.3'/%3E%3Ccircle cx='10' cy='10' r='2' fill='%23d9772b'/%3E%3C/svg%3E") repeat;
+  box-shadow:inset 0 0 0 1px var(--d-ink),0 0 0 1px var(--d-gold)}
+.game-dune .gstage{box-shadow:0 0 0 2px var(--d-gold),0 0 0 4px var(--d-ink),inset 0 0 18px rgba(58,31,16,.45)}
+
+/* corners: eight-point star with a spice centre */
+.game-dune .gc{display:block;position:absolute;width:30px;height:30px;z-index:2;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Crect x='6' y='6' width='18' height='18' fill='%23e8b45a' stroke='%231c0f07' stroke-width='1.2'/%3E%3Crect x='6' y='6' width='18' height='18' fill='%23e8b45a' stroke='%231c0f07' stroke-width='1.2' transform='rotate(45 15 15)'/%3E%3Ccircle cx='15' cy='15' r='4.5' fill='%23d9772b' stroke='%231c0f07' stroke-width='1.2'/%3E%3C/svg%3E") center/contain no-repeat}
+.game-dune .gc.tl{left:-6px;top:-6px}.game-dune .gc.tr{right:-6px;top:-6px}
+.game-dune .gc.bl{left:-6px;bottom:-6px}.game-dune .gc.br{right:-6px;bottom:-6px}
+
+/* panels: parchment with a gold and rust double rule */
+.game-dune .gpanel{background:radial-gradient(120% 90% at 50% 0%,#f8ebcd,#e7c991);color:#2b170a;border:2px solid #8a4a1c;border-radius:6px;
+  box-shadow:0 0 0 4px var(--d-gold),0 0 0 6px var(--d-rust),0 12px 30px rgba(0,0,0,.5)}
+.game-dune .gpanel::before{content:"◆  ◆  ◆";display:block;color:#a8501c;font-size:11px;letter-spacing:.3em;margin-bottom:6px}
+.game-dune .gpanel h2{font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;color:#5a2410;letter-spacing:.04em}
+.game-dune .gpanel .gintro{color:#4a2410}
+.game-dune .gpanel .gtip{border-top:1px solid rgba(138,74,28,.4);padding-top:8px;opacity:1}
+.game-dune .gpanel .gbtn{background:#8a3f16;color:#fbe9c6;border-color:var(--d-gold)}
+.game-dune .gpanel .gbtn.ghost{background:transparent;color:#3a1f10;border-color:#8a4a1c}
+.game-dune .gbtn:focus-visible{outline-color:var(--d-spice)}
