@@ -15,7 +15,8 @@ export const meta={
 const C={
   side:360, playerR:9, maxSpeed:140, quietBelow:0.35,
   noiseUp:2.5, noiseDown:0.6, hearAt:0.3,
-  wormR:13, wormRoam:35, wormHunt:70, wormHuntLoud:60, wormTurn:2.2, wormLen:16,
+  wormR:13, wormRoam:35, wormHunt:58, wormHuntLoud:47, wormTurn:2.2, wormLen:16,
+  wormAccel:40, wormBrake:80,   // the worm speeds up gradually when it hears you (units/s per second), slows down faster
   stormSpeed:9, stormPush:28, stormStart:-20,
   spiceCount:4, spiceR:6, pickup:15, respawn:0.6,
   rampSeconds:120, maxDiff:1.8,
@@ -33,7 +34,7 @@ export default function start(k,{seed,canvas,reducedMotion,onScore,onGameOver}){
   function measure(){u=Math.min(k.width(),k.height())/C.side;W=k.width()/u;H=k.height()/u}
   measure();
   const P={x:W/2,y:H*0.62,vx:0,vy:0};
-  const worm={x:W*0.12,y:H-24,dir:-Math.PI/2,state:'roam',tx:W*0.5,ty:H*0.8,trail:[]};
+  const worm={x:W*0.12,y:H-24,dir:-Math.PI/2,state:'roam',tx:W*0.5,ty:H*0.8,trail:[],speed:C.wormRoam};
   let noise=0,storm=C.stormStart,t=0,score=0,alive=true,shake=0,spawnT=[];
   const spice=[];
   const dunes=Array.from({length:14},()=>({y:R(),a:4+R()*10,f:0.006+R()*0.01,p:R()*6.28}));
@@ -105,9 +106,10 @@ export default function start(k,{seed,canvas,reducedMotion,onScore,onGameOver}){
     const want=Math.atan2(worm.ty-worm.y,worm.tx-worm.x);
     const turn=C.wormTurn*Math.sqrt(diff)*dt;
     worm.dir+=clamp(ang(want-worm.dir),-turn,turn);
-    const ws=(worm.state==='hunt'?C.wormHunt+C.wormHuntLoud*noise:C.wormRoam)*diff;
-    worm.x=clamp(worm.x+Math.cos(worm.dir)*ws*dt,0,W);
-    worm.y=clamp(worm.y+Math.sin(worm.dir)*ws*dt,0,H);
+    const wantSpeed=(worm.state==='hunt'?C.wormHunt+C.wormHuntLoud*noise:C.wormRoam)*diff;
+    worm.speed=wantSpeed>worm.speed?Math.min(wantSpeed,worm.speed+C.wormAccel*diff*dt):Math.max(wantSpeed,worm.speed-C.wormBrake*dt);
+    worm.x=clamp(worm.x+Math.cos(worm.dir)*worm.speed*dt,0,W);
+    worm.y=clamp(worm.y+Math.sin(worm.dir)*worm.speed*dt,0,H);
     const last=worm.trail[0];
     if(Math.hypot(worm.x-last.x,worm.y-last.y)>5){worm.trail.unshift({x:worm.x,y:worm.y});worm.trail.length=C.wormLen}
     if(Math.hypot(worm.x-P.x,worm.y-P.y)<C.wormR+C.playerR){end('Taken by the worm');return}

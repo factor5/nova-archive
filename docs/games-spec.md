@@ -133,6 +133,7 @@ Text timing: one intro line on the start screen, and one tip line after the auth
   - Full speed at 110 px of drag (about 18 mm on the reference phone), nothing within 8 px, and a curved response (speed = drag^1.6) so the silent walking range is about 60 px (about 10 mm). An inner ring on the joystick marks the silent range.
   - Once the thumb passes the edge, the base follows it, so changing direction is immediate.
   - History: the first build used 60 px and a straight response, which left only about 3.5 mm for silent walking (playtest 1: "almost impossible to move slow"). **Keyboard on desktop:** arrow keys or WASD, with a key (for example Shift) to switch between walking and running.
+- **Worm speed:** roams at 35 units/s. When it hears you it hunts at 58, up to 105 when you are at full noise (you run at 140). It speeds up gradually (40 units/s per second), so there is a moment to react. History: the first builds hunted at 70 to 130 and jumped to that speed at once (playtest 2: "starts moving too fast when it detects me").
 - **Lose:** the worm reaches you, or the storm catches you.
 - **Score:** spice collected. Best score kept locally (section 7).
 - **Difficulty:** rises over time (worm speed or sensitivity, storm pressure, spice spread). Exact curve tuned through playtests.
@@ -157,6 +158,7 @@ Text timing: one intro line on the start screen, and one tip line after the auth
 - New feature file **`tests/features/13-games.feature`** for the shared shell: beta switch shows and hides Play, Play launches the game, canvas appears, pause and resume, auto-pause on tab hidden, Back to book returns to the book page, best score is kept after a run.
 - **Per-game smoke scenario** for *Dune* with a **fixed random seed**: loads, responds to input, can end a run, no console errors.
 - Existing smoke scenarios keep gating merges via CI.
+- **What gets an automated test:** the shell and wiring (beta switch, Play, pause, back, best score, layout, no console errors) and logic that could break silently (for example the joystick base following the thumb). **Tuning values** (speeds, ranges, curves) get no tests: they change on purpose after playtests, and the author's playtests check them. Retired scenario ids, never reused: GM-15 (silent short drag), GM-17 (worm speed-up).
 
 ### 9.2 Manual playtest (author, on the phone)
 Checklist for each playtest build:
