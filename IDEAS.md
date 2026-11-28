@@ -12,6 +12,9 @@ A scratchpad for features to add later. Move items to "Done" when they ship.
 - Per-book page (awards, your shelf, author's other books, same-year competitors)
 - Themes: Nova (dark), Paper (light), Terminal, Dune and Auto, with a theme picker (synced with your account)
 
+## Games
+- **Book games**: small playable games based on winner books (puzzle, top-down, run and gun, questing). Idea, Q&A and draft spec in [`docs/games-spec.md`](docs/games-spec.md)
+
 ## Themes
 - Per-theme accent colours, or a user-picked accent
 
