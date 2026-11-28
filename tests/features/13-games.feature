@@ -41,6 +41,7 @@ Feature: Book games
     When I tap Play
     Then the address ends with "#play/dune--frank-herbert"
     And the game screen shows "Spice Run" with a play area
+    And the game screen has its decorative frame
     And the game shows its start screen with "Start" and "Back to book"
     When I tap the game button "Start"
     Then the game is running
@@ -110,7 +111,7 @@ Feature: Book games
   @GM-13 @mobile
   Scenario: The game screen fits a phone
     Given I am playing "Spice Run" from the Dune book page
-    Then the play area fills the screen below the top bar
+    Then the framed play area fills the screen below the top bar
     And nothing on the game screen overflows horizontally
 
   @GM-16 @mobile
@@ -118,6 +119,13 @@ Feature: Book games
     Given I am playing "Spice Run" from the Dune book page
     When I drag far to the right, then move my thumb back a little to the left and hold
     Then the player has moved left since the turn
+
+  @GM-18 @mobile
+  Scenario: Turning the phone during a run keeps the game going
+    Given I am playing "Spice Run" from the Dune book page
+    When I turn the phone to landscape
+    Then the game is still running with the player on the screen
+    And the play area fills the wider screen
 
   @GM-14 @manual
   Scenario: Playtest on the phone (Motorola Edge 30)
