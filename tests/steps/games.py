@@ -211,19 +211,6 @@ def drag_from_middle(env, dx, at=0.5):
     return cx + dx, cy
 
 
-@step(r'I drag a short way to the left on the play area and hold')
-def _drag_short(env):
-    env.x0 = state(env)['x']
-    drag_from_middle(env, -40)
-    env.page.wait_for_timeout(700)
-
-
-@step(r"the noise meter is below the worm's hearing level")
-def _quiet(env):
-    n = state(env)['noise']; env.page.mouse.up()
-    assert n < 0.3, n
-
-
 @step(r'I drag far to the right, then move my thumb back a little to the left and hold')
 def _drag_turn(env):
     # start at 20% of the width, push 260 px right (past the 110 px edge, so the base follows),
