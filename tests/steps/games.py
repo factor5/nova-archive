@@ -202,3 +202,41 @@ def _fills(env):
 def _no_overflow(env):
     d = env.page.evaluate("[document.documentElement.scrollWidth-document.documentElement.clientWidth, (e=>e.scrollWidth-e.clientWidth)(document.getElementById('gameRoot'))]")
     assert d[0] <= 0 and d[1] <= 0, d
+
+
+def drag_from_middle(env, dx, at=0.5):
+    b = env.page.locator('#gCanvas').bounding_box()
+    cx, cy = b['x'] + b['width'] * at, b['y'] + b['height'] * 0.6
+    env.page.mouse.move(cx, cy); env.page.mouse.down(); env.page.mouse.move(cx + dx, cy, steps=6)
+    return cx + dx, cy
+
+
+@step(r'I drag a short way to the left on the play area and hold')
+def _drag_short(env):
+    env.x0 = state(env)['x']
+    drag_from_middle(env, -40)
+    env.page.wait_for_timeout(700)
+
+
+@step(r"the noise meter is below the worm's hearing level")
+def _quiet(env):
+    n = state(env)['noise']; env.page.mouse.up()
+    assert n < 0.3, n
+
+
+@step(r'I drag far to the right, then move my thumb back a little to the left and hold')
+def _drag_turn(env):
+    # start at 20% of the width, push 260 px right (past the 110 px edge, so the base follows),
+    # then come back 200 px: a clear left drag if the base followed (a fixed base would still be 60 px to the left of the thumb)
+    x, y = drag_from_middle(env, 140, at=0.2)
+    env.page.mouse.move(x + 120, y, steps=6)
+    env.page.wait_for_timeout(200)
+    env.x0 = state(env)['x']
+    env.page.mouse.move(x + 120 - 200, y, steps=4)
+    env.page.wait_for_timeout(500)
+
+
+@step(r'the player has moved left since the turn')
+def _left_since(env):
+    x = state(env)['x']; env.page.mouse.up()
+    assert x < env.x0 - 10, (env.x0, x)

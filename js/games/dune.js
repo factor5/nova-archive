@@ -18,7 +18,9 @@ const C={
   wormR:13, wormRoam:35, wormHunt:70, wormHuntLoud:60, wormTurn:2.2, wormLen:16,
   stormSpeed:9, stormPush:28, stormStart:-20,
   spiceCount:4, spiceR:6, pickup:15, respawn:0.6,
-  rampSeconds:120, maxDiff:1.8, joyR:60
+  rampSeconds:120, maxDiff:1.8,
+  // joystick, in screen pixels: full speed at joyR; nothing within joyDead; joyCurve > 1 gives more room for slow, quiet walking
+  joyR:110, joyDead:8, joyCurve:1.6
 };
 
 function rng(seed){let a=seed>>>0;return ()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296}}
@@ -50,7 +52,12 @@ export default function start(k,{seed,canvas,reducedMotion,onScore,onGameOver}){
   const joy={id:null,ox:0,oy:0,dx:0,dy:0};
   const pos=e=>{const r=canvas.getBoundingClientRect();return [(e.clientX-r.left)*k.width()/r.width,(e.clientY-r.top)*k.height()/r.height]};
   const down=e=>{if(joy.id!==null)return;joy.id=e.pointerId;[joy.ox,joy.oy]=pos(e);joy.dx=joy.dy=0;try{canvas.setPointerCapture(e.pointerId)}catch(x){}e.preventDefault()};
-  const move=e=>{if(e.pointerId!==joy.id)return;const [x,y]=pos(e);joy.dx=x-joy.ox;joy.dy=y-joy.oy;e.preventDefault()};
+  const move=e=>{
+    if(e.pointerId!==joy.id)return;
+    const [x,y]=pos(e);let dx=x-joy.ox,dy=y-joy.oy;const len=Math.hypot(dx,dy);
+    // the base follows the thumb once it passes the edge, so changing direction is immediate
+    if(len>C.joyR){const f=1-C.joyR/len;joy.ox+=dx*f;joy.oy+=dy*f;dx=x-joy.ox;dy=y-joy.oy}
+    joy.dx=dx;joy.dy=dy;e.preventDefault()};
   const up=e=>{if(e.pointerId!==joy.id)return;joy.id=null;joy.dx=joy.dy=0};
   canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointermove',move);
   canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
@@ -60,8 +67,9 @@ export default function start(k,{seed,canvas,reducedMotion,onScore,onGameOver}){
   function input(){
     if(joy.id!==null){
       const len=Math.hypot(joy.dx,joy.dy);
-      if(len<4)return [0,0,0];
-      return [joy.dx/len,joy.dy/len,Math.min(1,len/C.joyR)];
+      if(len<C.joyDead)return [0,0,0];
+      const d=Math.min(1,(len-C.joyDead)/(C.joyR-C.joyDead));
+      return [joy.dx/len,joy.dy/len,Math.pow(d,C.joyCurve)];   // speed as a share of maxSpeed
     }
     let x=0,y=0;
     if(k.isKeyDown('left')||k.isKeyDown('a'))x--;
@@ -171,6 +179,8 @@ export default function start(k,{seed,canvas,reducedMotion,onScore,onGameOver}){
     // floating joystick
     if(joy.id!==null){
       k.drawCircle({pos:V(joy.ox,joy.oy),radius:C.joyR,fill:false,outline:{width:2,color:col.ink},opacity:0.5});
+      // inner ring: inside it you walk silently
+      k.drawCircle({pos:V(joy.ox,joy.oy),radius:C.joyDead+(C.joyR-C.joyDead)*Math.pow(C.quietBelow,1/C.joyCurve),fill:false,outline:{width:1.5,color:col.ink},opacity:0.35});
       const len=Math.hypot(joy.dx,joy.dy),m=Math.min(len,C.joyR),kx=len?joy.ox+joy.dx/len*m:joy.ox,ky=len?joy.oy+joy.dy/len*m:joy.oy;
       k.drawCircle({pos:V(kx,ky),radius:16,fill:false,outline:{width:3,color:col.ink},opacity:0.45});
     }

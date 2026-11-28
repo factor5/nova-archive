@@ -113,6 +113,19 @@ Feature: Book games
     Then the play area fills the screen below the top bar
     And nothing on the game screen overflows horizontally
 
+  @GM-15 @mobile
+  Scenario: A short drag walks slowly and silently
+    Given I am playing "Spice Run" from the Dune book page
+    When I drag a short way to the left on the play area and hold
+    Then the player has moved left
+    And the noise meter is below the worm's hearing level
+
+  @GM-16 @mobile
+  Scenario: Changing direction after a long drag is immediate
+    Given I am playing "Spice Run" from the Dune book page
+    When I drag far to the right, then move my thumb back a little to the left and hold
+    Then the player has moved left since the turn
+
   @GM-14 @manual
   Scenario: Playtest on the phone (Motorola Edge 30)
     Given the installed app with games (beta) switched on
