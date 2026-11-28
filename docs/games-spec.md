@@ -109,12 +109,30 @@ export default function start(k, {seed, canvas, reducedMotion, onScore, onGameOv
 
 ## 6. Pilot game: *Dune* (design sheet)
 
-Plot moments for the intro and flavour text: to be drafted from Wikipedia and approved by the author (5.1) before PR 2.
+### 6.1 Plot moments (approved by the author, 2026-11-28)
+Drafted from the Wikipedia plot section of *Dune* (novel) in our own words; no names, generic terms for places and peoples ("the desert planet", "the desert people").
+
+Source quality: the plot section is complete (about 8,500 characters) but focused on politics. Sandworms guarding spice, the escape into a sandstorm and spice visions are covered. "Walking without rhythm" is supported only indirectly (a song reference in the article's Cultural influence section); the author confirmed it fits the book. Thumpers, stillsuits and spice blows are not on the page.
+
+| # | Moment | Use in the game |
+|---|---|---|
+| 1 | After a betrayal, the heir of a noble house and his mother flee into the open desert; a sandstorm hides them from their pursuers. | Intro line: why the storm is behind you |
+| 2 | In the deep desert spice is concentrated enough to bring visions; it is the most valuable substance there is. | What you collect; later maybe "vision" lines at score milestones |
+| 3 | Giant sandworms make harvesting spice deadly. | The worm; game-over "Taken by the worm" |
+| 4 | Desert people walk without rhythm so the worm does not sense them. | The noise rule; a start-screen tip |
+| 5 | The desert people take the fugitives in; in the end they ride giant sandworms into battle. | Not now. Candidate twist (ride the worm) only if the core loop sticks |
+
+Text timing: one intro line on the start screen, and one tip line after the author has played twice. Milestone "visions" only if the game sticks.
+
+### 6.2 Design sheet
 
 - **Genre:** top-down survival, endless score run.
 - **Goal:** collect as much spice as possible before being caught.
 - **Core tension (greed vs noise):** moving fast makes noise, and noise draws the sandworm. Moving slowly is quiet and safe, but a storm (or timer) closes in, so you cannot just creep.
-- **Controls (touch):** floating joystick. Put a thumb down anywhere and drag; how far you drag sets speed, and speed is noise. **Keyboard on desktop:** arrow keys or WASD, with a key (for example Shift) to switch between walking and running.
+- **Controls (touch):** floating joystick. Put a thumb down anywhere and drag; how far you drag sets speed, and speed is noise.
+  - Full speed at 110 px of drag (about 18 mm on the reference phone), nothing within 8 px, and a curved response (speed = drag^1.6) so the silent walking range is about 60 px (about 10 mm). An inner ring on the joystick marks the silent range.
+  - Once the thumb passes the edge, the base follows it, so changing direction is immediate.
+  - History: the first build used 60 px and a straight response, which left only about 3.5 mm for silent walking (playtest 1: "almost impossible to move slow"). **Keyboard on desktop:** arrow keys or WASD, with a key (for example Shift) to switch between walking and running.
 - **Lose:** the worm reaches you, or the storm catches you.
 - **Score:** spice collected. Best score kept locally (section 7).
 - **Difficulty:** rises over time (worm speed or sensitivity, storm pressure, spice spread). Exact curve tuned through playtests.
