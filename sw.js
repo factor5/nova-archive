@@ -2,8 +2,8 @@
    - Same-origin files: network first (so a new deploy shows up right away), cache as fallback.
    - Firebase SDK + Google Fonts: stale-while-revalidate runtime cache.
    - Firebase Auth helper URLs (/__/...) and Firestore/API traffic are never touched. */
-const VERSION = 'nova-v21';
-const SHELL = ['./', 'index.html', 'css/base.css', 'css/theme-dune.css', 'css/theme-nova.css', 'css/theme-paper.css', 'css/theme-terminal.css', 'js/actions.js', 'js/addbook.js', 'js/bookpage.js', 'js/cards.js', 'js/config.js', 'js/data.js', 'js/enrich.js', 'js/importlists.js', 'js/main.js', 'js/overlay.js', 'js/state.js', 'js/sync.js', 'js/theme.js', 'js/util.js', 'js/views.js', 'data.json', 'firebase-config.js', 'manifest.webmanifest',
+const VERSION = 'nova-v22';
+const SHELL = ['./', 'index.html', 'css/base.css', 'css/theme-dune.css', 'css/theme-nova.css', 'css/theme-paper.css', 'css/theme-terminal.css', 'js/actions.js', 'js/addbook.js', 'js/bookpage.js', 'js/cards.js', 'js/config.js', 'js/data.js', 'js/enrich.js', 'js/games.js', 'js/importlists.js', 'js/main.js', 'js/overlay.js', 'js/state.js', 'js/sync.js', 'js/theme.js', 'js/util.js', 'js/views.js', 'data.json', 'firebase-config.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

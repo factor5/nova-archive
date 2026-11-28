@@ -26,6 +26,7 @@ tests/
     10-offline-and-updates.feature
     11-navigation-and-accessibility.feature
     12-data-integrity.feature
+    13-games.feature
   fixtures/facts.json       numbers and example books taken from data.json (generated)
   support/
     gen_facts.py            regenerates / verifies fixtures/facts.json
@@ -78,6 +79,7 @@ Scenarios talk about things a user sees. Automation maps them to these stable ho
 | Modal | `#ovRoot .modal` |
 | Lists page | `#newListName`, `[data-act="newlist"]`, `.litem`, `#listName`, `#lsort`, `.item`, `[data-act="up" \| "down" \| "rm" \| "copylist" \| "dellist"]` |
 | Book page | `.bpage`, `.bhead h2`, `#bookInfo`, `#pageNote`, `#pageFin`, `table.aw tbody tr`, `.sy`, `#cbT`, `#cbA`, `#cbY`, `#cbSave`, `#cbDel` |
+| Games | `#gamesToggle` (About), `#bookGame`, `#playBtn`, `#bookBest` (book page); `#gameRoot[data-phase=start\|play\|paused\|over]`, `#gCanvas`, `#gPanel`, `#gScore`, `#gBest`, `#gFinal`, `[data-g="back" \| "pause"]`. Test hook `window.__novaGameTest = {seed, speed}`, state via `window.__novaGameState()` |
 | Add-a-book dialog | `#abQ`, `#abRes`, `#abT`, `#abA`, `#abY`, `#abMsg`, `[data-act="absave"]` |
 | Theme in effect | attribute `data-theme` on `<html>`; saved choice in local storage key `nova-theme` |
 | Saved user data (local copy) | local storage key `nova-archive-v1` (JSON) |

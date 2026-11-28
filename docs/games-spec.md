@@ -1,6 +1,6 @@
 # Book games: spec
 
-Status: **spec agreed, not built.** Decisions below were settled in a Q&A with the author on 2026-11-28. The pilot is one game (*Dune*); more games are decided only after it has been played.
+Status: **PR 2 built: shell, engine and a rough playable *Dune*, hidden behind the beta switch.** Decisions below were settled in a Q&A with the author on 2026-11-28. The pilot is one game (*Dune*); more games are decided only after it has been played.
 
 ## 1. The idea (author's words, lightly edited)
 
@@ -45,25 +45,31 @@ One game per winner book is out of scope: 296 of the 1,329 books have at least o
 
 ### 4.1 Engine
 - **Kaplay** (successor to Kaboom), copied into the repo at `js/vendor/kaplay.mjs`, pinned to a version noted in the file header.
-- Before committing it, **measure the minified size**. If it is over **~250 KB**, try **LittleJS** instead. (Sizes in the earlier draft were from memory and are not trusted.)
+- Measured before committing: **KAPLAY 3001.0.19, `dist/kaplay.mjs`: 188.5 KB minified, 69 KB gzipped**, under the ~250 KB limit, so LittleJS was not needed. MIT licence, copied as `js/vendor/kaplay.LICENSE.md`.
+- KAPLAY is given the game stage as its `root`; without one it sets `width`, `height` and `margin` on the app's `<html>` and `<body>`. After `quit()` the shell clears KAPLAY's module state (`_k.k = null`) so the next Play starts clean.
 - Fits the existing setup: plain ES module, no build step.
 
 ### 4.2 Files and loading
 - One file per game: `js/games/<slug>.js`, loaded with dynamic `import()` only when **Play** is tapped, so the main app stays light.
-- Shared shell: `js/games/shell.js` (start, pause, restart, score, best score, back, auto-pause).
-- Registry: `js/games/registry.js` (or JSON) mapping book id to game.
+- Shared shell: `js/games/shell.js` (start, pause, restart, score, best score, back, auto-pause), loaded on Play.
+- Registry, beta switch, best scores and open/close: `js/games.js`. It sits directly in `js/` (so it is precached and the book page works offline) and is kept small.
+- Route: `#play/<book id>` shows the book page with the game layer on top, so the phone's Back button closes the game.
 
-### 4.3 Game module interface (draft, finalise in PR 2)
-Each game module exports a function the shell calls, roughly:
+### 4.3 Game module interface
+Each game module (`js/games/<slug>.js`) exports:
 
 ```
-export default function start(k, { seed, onScore, onGameOver, reducedMotion })
+export const meta = {background: '#rrggbb', help: ['line', ...]}
+export default function start(k, {seed, canvas, reducedMotion, onScore, onGameOver})
+  -> {update(dt), draw(), destroy(), state?()}
 ```
 
-- `k`: the engine context, created by the shell inside a canvas it owns.
-- `seed`: random seed (fixed in tests, random in play).
-- `onScore(n)`, `onGameOver(score)`: callbacks so the shell handles best score and the end screen.
-- `reducedMotion`: true when the phone asks for reduced motion.
+- `k`: the KAPLAY context, created by the shell on a canvas it owns. The game uses it for drawing, `dt` and keys.
+- The **shell owns the loop**: it calls `update(dt)` only while playing (in steps of at most 1/30 s) and `draw()` every frame. Pause therefore needs nothing from the game.
+- `seed`: random seed (fixed in tests, random in play). `onScore(n)` reports the running score; `onGameOver(score, reason)` ends the run.
+- Touch and mouse: the game listens to pointer events on `canvas` itself and removes them in `destroy()`.
+- `state()` is optional and only used by tests (`window.__novaGameState()` when the test hook is set).
+- Test hook: `window.__novaGameTest = {seed, speed}`, set by the test suite before Play. Never set in normal use.
 
 ### 4.4 Registry entry (content model)
 | Field | Example | Notes |
@@ -77,7 +83,7 @@ export default function start(k, { seed, onScore, onGameOver, reducedMotion })
 
 ### 4.5 Timing
 - All movement and timers use **elapsed time (delta time), never frame counts**. The reference phone has a high refresh-rate screen (up to 144 Hz); frame-based speed would make the game run faster there.
-- Cap the frame rate (for example at 60 fps) if the phone heats up or drains battery.
+- The frame rate is capped at 60 fps (KAPLAY `maxFPS`) and the canvas pixel density at 2, to spare the battery on high refresh-rate screens.
 
 ### 4.6 Graphics and sound
 - Graphics drawn in code: shapes, a small pixel palette, possibly emoji. No image files, no cover art, no character likenesses.
@@ -86,6 +92,7 @@ export default function start(k, { seed, onScore, onGameOver, reducedMotion })
 ### 4.7 Offline and caching
 - Rely on the existing service worker (network first, cache fallback for same-origin files): **a game works offline after it has been played once**.
 - Add the engine and game files to the precache only if testing shows it is needed. Keeps the install size the same for people who never play.
+- Known limit: each app update starts a new cache, so after an update the game must be played once online again before it works offline.
 - Version bump with `python3 tools/bump.py` for every app change, as usual.
 
 ## 5. Content and rights

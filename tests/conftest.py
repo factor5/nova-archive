@@ -7,7 +7,7 @@ import functools, http.server, json, os, re, socketserver, threading
 import pytest
 from playwright.sync_api import sync_playwright
 
-pytest_plugins = ['steps.common', 'steps.sync', 'steps.offline', 'steps.themes', 'steps.nav', 'steps.integrity', 'steps.library', 'steps.shelf', 'steps.lists', 'steps.pages']
+pytest_plugins = ['steps.common', 'steps.sync', 'steps.offline', 'steps.themes', 'steps.nav', 'steps.integrity', 'steps.library', 'steps.shelf', 'steps.lists', 'steps.pages', 'steps.games']
 from playwright.sync_api import expect as _expect
 _expect.set_options(timeout=6000)
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -113,7 +113,7 @@ def env(browser, base_url, request):
 
 
 def pytest_collection_modifyitems(items):
-    """Mark every scenario with its feature number (marker f01..f12) so one area can be run: -m f09."""
+    """Mark every scenario with its feature number (marker f01..f13) so one area can be run: -m f09."""
     for item in items:
         if item.get_closest_marker('wip'): item.add_marker(pytest.mark.skip(reason='wip: automation not possible yet (see tests/README.md)'))
         if item.get_closest_marker('manual'): item.add_marker(pytest.mark.skip(reason='manual scenario: needs a person, a device or real services'))

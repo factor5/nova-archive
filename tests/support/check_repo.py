@@ -47,9 +47,9 @@ for ref in re.findall(r'(?:href|src)="([^"#:]+?)(?:\?[^"]*)?"', html):
     ok(os.path.exists(P(ref)), 'DI-12 missing %s' % ref)
 mf = json.load(open(P('manifest.webmanifest')))
 for i in mf.get('icons', []): ok(os.path.exists(P(i['src'])), 'DI-12 icon %s' % i['src'])
-for f in glob.glob(P('js','*.js')):
+for f in glob.glob(P('js','*.js')) + glob.glob(P('js','games','*.js')):
     src = open(f).read()
-    for imp in re.findall(r"from\s+'(\.[^']+)'", src):
+    for imp in re.findall(r"from\s+'(\.[^']+)'", src) + re.findall(r"import\('(\.[^']+)'\)", src):
         ok(os.path.exists(os.path.normpath(os.path.join(os.path.dirname(f), imp))), 'DI-13 import %s in %s' % (imp, f))
     if subprocess.run(['node','--check',f], capture_output=True).returncode: bad.append('DI-13 syntax %s' % f)
 for f in glob.glob(P('**','*'), recursive=True):

@@ -8,6 +8,7 @@ import {touch} from './sync.js';
 import {BOOKS,BYID,groups,visible,baseCount} from './data.js';
 import {badge,card,linkRow,stars,stateBtns} from './cards.js';
 import {refreshBookOv} from './overlay.js';
+import {betaOn,setBeta,syncGame} from './games.js';
 export function decades(){const s=new Set();BOOKS.forEach(b=>b.entries.forEach(e=>s.add(Math.floor(e.year/10)*10)));return [...s].sort((a,b)=>b-a)}
 export function shellLibrary(){
   const app=$('#app');
@@ -112,9 +113,13 @@ export function renderAbout(){
     <h2>Covers and descriptions</h2>
     <p>Book pages can look up a cover, description and subjects on <a class="lk" href="https://openlibrary.org" target="_blank" rel="noopener noreferrer">Open Library</a>. This happens only when you open a book page, and sends just the title and author to Open Library. Results are cached in this browser.</p>
     <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="olToggle"${enrichOn()?' checked':''}> Look up covers and descriptions</label>
+    <h2>Games (beta)</h2>
+    <p>Small games based on some of the books, still being tested. When switched on, a book with a game shows a Play button on its page. This setting applies to this device only.</p>
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="gamesToggle"${betaOn()?' checked':''}> Show games (beta)</label>
     <p style="color:var(--muted);font-size:13px">App version ${esc((document.querySelector('meta[name=app-version]')||{}).content||'?')}</p>
   </section>`;
   const ol=$('#olToggle');if(ol)ol.addEventListener('change',()=>setEnrich(ol.checked));
+  const gt=$('#gamesToggle');if(gt)gt.addEventListener('change',()=>setBeta(gt.checked));
 }
 export function renderNow(){
   const el=$('#nowReading');const ids=Object.keys(S.reading).filter(id=>BYID.has(id)).sort((a,b)=>S.reading[a]-S.reading[b]);
@@ -137,9 +142,11 @@ export function renderAll(){
 }
 export function route(){
   const h=(location.hash||'#library').slice(1);
-  const bm=h.match(/^book\/(.+)$/);
+  const pm=h.match(/^play\/(.+)$/);
+  const bm=h.match(/^book\/(.+)$/)||pm;
   const t=bm?'book':(['library','lists','about'].includes(h)?h:'library');
   const page=bm?decodeURIComponent(bm[1]):null;
   if(t!==ui.tab||page!==ui.page||!$('#app').children.length){ui.tab=t;ui.page=page;$('#app').innerHTML='';if(t==='book')window.scrollTo(0,0)}
   renderAll();
+  syncGame(pm?decodeURIComponent(pm[1]):null);
 }
