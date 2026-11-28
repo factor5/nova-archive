@@ -1,6 +1,6 @@
-# Book games: idea and draft spec
+# Book games: spec
 
-Status: **idea stage, not started.** This file records the original idea, the discussion so far and a first proposal. Expand it into a proper spec before building. Open points are marked **TBD**.
+Status: **spec agreed, not built.** Decisions below were settled in a Q&A with the author on 2026-11-28. The pilot is one game (*Dune*); more games are decided only after it has been played.
 
 ## 1. The idea (author's words, lightly edited)
 
@@ -8,76 +8,176 @@ Introduce some interactivity in the app: a simple game for each of the winner bo
 
 Follow-up: a data-only quiz is not interactive enough. The author prefers real games: **puzzle, mapping, top-down RPG, run and gun, questing** and similar. Start with a few to see how it goes, using either an open-source light game engine or a handcrafted one. Spoilers are not a concern.
 
-## 2. Questions and answers so far
+One game per winner book is out of scope: 296 of the 1,329 books have at least one win, and handcrafting that many is not realistic.
 
-**Q: What do you think of one game per winner book?**
-A: Good idea, wrong scope. 296 of the 1,329 books have at least one win (data.json), and handcrafting that many games is not realistic. Plot details written by an AI can be wrong, and a wrong detail in a game looks bad. Better: a small engine plus content per book, starting with a handful of hand-picked games.
+## 2. Goals and non-goals
 
-**Q: Is a data-only quiz enough?** (Proposed by Claude: guess the year, which book won, which author wrote these.)
-A (author): No, not interactive enough. Prefer real game genres. The quiz idea may return later as a cheap extra, but it is not the goal.
+### Goals
+- Small, real games (not quizzes) tied to individual books, played on the author's phone.
+- Audience: the author. Other visitors may see the games once they are released, but nothing is tuned for them (no tutorials, no onboarding).
+- Short sessions: **2 to 5 minutes per run**, with a reason to replay (score or time), not a long campaign.
 
-**Q: Engine or handcrafted?**
-A (Claude): Use a small open-source engine for the first games. Recommendation: **Kaplay** (successor to Kaboom). It covers sprites, collision, tilemaps, input, scenes and camera, is a plain JavaScript module (fits the no-build-step setup) and can be copied into the repo so the service worker caches it for offline use. Phaser is more powerful but heavier and slower to learn. LittleJS is tiny but less convenient. A fully handcrafted canvas game is fine for a single puzzle but repeats engine basics across genres. File sizes were stated from memory and must be measured before committing. **Decision: TBD** (author to confirm after a prototype).
+### Success and stop rule
+- **Success:** the author finishes the first game on the phone at least twice unprompted and wants another one.
+- **Stop:** if it is not fun or not comfortable after two rounds of playtest changes, the games idea stops there.
 
-**Q: Spoilers?**
-A (author): Not a concern. Games may show plot events and endings. (Earlier idea of unlocking games only after marking a book read is dropped.)
+### Scope cap
+- **At most 3 games.** Build one, play it, then decide on the next. More than 3 only after all 3 have been played.
+- One pilot at a time: the second game does not start until the first has passed or failed the success test.
 
-## 3. Proposed approach (Claude's proposal, to be confirmed)
+### Non-goals
+- A game for every winner book.
+- Data-only quizzes (may return later as a cheap extra, see section 11).
+- Sound in the pilot.
+- Syncing results to Firestore in the pilot.
+- Menus, levels, story screens or achievements before the core loop has been played (see 9.3).
 
-### 3.1 Structure
-- One file per game: `js/games/<book-id-or-slug>.js`, loaded only when the player taps **Play** on the book page (dynamic `import()`), so the main app stays light.
-- A small registry (JSON) maps book id to game file, title, genre and a one-line description. Books without a game show no Play button.
-- The engine library is copied into the repo (for example `js/vendor/kaplay.mjs`), versioned, and added to the service worker precache or runtime cache.
-- A shared helper provides: start screen, pause, restart, score, "Back to book", and an optional "Finished" record. **TBD:** whether results are stored (see 3.5).
-- Graphics are drawn in code (shapes, emoji, small pixel palette). No image files, no licensing issues, small size. No cover art or character likenesses.
-- Sound: optional, generated with WebAudio, off by default. **TBD.**
+## 3. Player experience and navigation
 
-### 3.2 Phone first
-The author uses the app mainly on a phone (installed Android PWA). Every game must:
-- work with touch only (virtual joystick or tap-to-move, large buttons) and also with keyboard on desktop;
-- fit portrait and landscape without scrolling;
-- run acceptably on a mid-range phone (**TBD:** target frame rate and a reference device);
-- not trap the user: there is always a visible way back to the book.
+- **Entry point:** a **Play** button on the book page, shown only for books that have a game. No Games tab or library filter while there are at most 3 games.
+- **Beta switch:** until the author approves a game, games are hidden for everyone. A **"Show games (beta)"** switch on the About page shows them on that device (stored in local storage, not synced). The switch is removed once games are released.
+- **Shell around every game:** start screen, pause, restart, score and best score, and an always visible **Back to book**. The game never traps the user.
+- **Pause:** automatic when the tab is hidden or the app goes to the background; manual pause button.
+- **Orientation:** designed for portrait, still playable in landscape, never scrolls.
+- **Spoilers:** allowed. Games may show plot events and endings. Games are not locked behind marking a book read.
 
-### 3.3 Pilot games (one genre each)
-| Book | Genre | Sketch |
+## 4. Technical architecture
+
+### 4.1 Engine
+- **Kaplay** (successor to Kaboom), copied into the repo at `js/vendor/kaplay.mjs`, pinned to a version noted in the file header.
+- Before committing it, **measure the minified size**. If it is over **~250 KB**, try **LittleJS** instead. (Sizes in the earlier draft were from memory and are not trusted.)
+- Fits the existing setup: plain ES module, no build step.
+
+### 4.2 Files and loading
+- One file per game: `js/games/<slug>.js`, loaded with dynamic `import()` only when **Play** is tapped, so the main app stays light.
+- Shared shell: `js/games/shell.js` (start, pause, restart, score, best score, back, auto-pause).
+- Registry: `js/games/registry.js` (or JSON) mapping book id to game.
+
+### 4.3 Game module interface (draft, finalise in PR 2)
+Each game module exports a function the shell calls, roughly:
+
+```
+export default function start(k, { seed, onScore, onGameOver, reducedMotion })
+```
+
+- `k`: the engine context, created by the shell inside a canvas it owns.
+- `seed`: random seed (fixed in tests, random in play).
+- `onScore(n)`, `onGameOver(score)`: callbacks so the shell handles best score and the end screen.
+- `reducedMotion`: true when the phone asks for reduced motion.
+
+### 4.4 Registry entry (content model)
+| Field | Example | Notes |
 |---|---|---|
-| *Dune* | Top-down survival run | Cross the dunes collecting spice. Sandworms track your footsteps, so you must keep changing pace. |
-| *Neuromancer* | Puzzle | Route a signal through a grid of ICE nodes before a timer ends. |
-| *The Martian* | Resource puzzle | Plan potato plots and water on a small Mars base grid. |
+| `bookId` | id from `data.json` | Book ids are stable |
+| `slug` | `dune` | File name under `js/games/` |
+| `title` | "Spice Run" | Original game title |
+| `genre` | "top-down survival" | |
+| `blurb` | one line | Own wording |
+| `status` | `beta` / `released` | `beta` shows only with the switch on |
 
-The author has not yet chosen the final three. Alternatives named: *The Forever War* (run and gun, time dilation changes the world between levels), *Hyperion* (quest with branching pilgrim stories). **TBD:** final pilot list.
+### 4.5 Timing
+- All movement and timers use **elapsed time (delta time), never frame counts**. The reference phone has a high refresh-rate screen (up to 144 Hz); frame-based speed would make the game run faster there.
+- Cap the frame rate (for example at 60 fps) if the phone heats up or drains battery.
 
-### 3.4 Process
-- Build one prototype first, then iterate. Each game ships in its own pull request so it can be tried on a phone before the next one is merged.
-- Claude can build the games and automate smoke tests (loads, canvas appears, responds to input, no console errors, back button works). Claude cannot judge fun or touch feel; that needs the author playing on a phone and giving feedback.
+### 4.6 Graphics and sound
+- Graphics drawn in code: shapes, a small pixel palette, possibly emoji. No image files, no cover art, no character likenesses.
+- **No sound in the pilot.** WebAudio-generated sound, off by default, may come later if the game sticks.
 
-### 3.5 Open questions (to resolve while writing the spec)
-1. Engine: Kaplay, Phaser, LittleJS or handcrafted? Measure sizes and try one prototype.
-2. Should game results (high score, "completed") be stored in the user's data and synced? If yes, where in the `users/<uid>` document and how does it affect the data-integrity checks?
-3. Difficulty and length: each game a 2 to 5 minute session, or longer?
-4. Content source: who writes the plot beats for each game (Claude drafts, author reviews)? How to avoid factual errors about the books?
-5. Copyright stance: original mechanics and original wording only. Confirm no cover art, no quotes from the books, no text taken from Wikipedia or Goodreads plot sections.
-6. Where do games appear: only on the book page, also as a "Play" filter or a Games tab in the library?
-7. Accessibility: colour-blind safe palette, reduced motion option, pause on tab hidden.
-8. Testing: how much of each game can be covered by BDD scenarios (see `tests/`)? Suggest a new feature file `13-games.feature` for the shared shell (Play button, launch, pause, back) and per-game smoke scenarios.
-9. Offline: confirm games work offline after first load.
-10. Cheap extras for later: data-only quiz modes, daily random book, "guess the book from three clues".
+### 4.7 Offline and caching
+- Rely on the existing service worker (network first, cache fallback for same-origin files): **a game works offline after it has been played once**.
+- Add the engine and game files to the precache only if testing shows it is needed. Keeps the install size the same for people who never play.
+- Version bump with `python3 tools/bump.py` for every app change, as usual.
 
-## 4. Constraints from the existing app
+## 5. Content and rights
+
+### 5.1 Plot source
+- For each game, Claude reads the book's **Wikipedia plot section as a reference only**, while writing the game, never at runtime.
+- Claude proposes the **genre** (with a one-line reason; the author decides) and **3 to 5 plot moments** written in Claude's own words, and says how complete the source was. Books without a usable Wikipedia plot are flagged; the author's corrections carry more weight there, or another book is chosen.
+- The **author approves or corrects** the plot moments before anything is built. The author is the fact-checker; Claude does not invent plot details.
+
+### 5.2 Copyright stance
+- Original mechanics, original wording, art drawn in code.
+- Allowed: the book title as a label, and generic in-world terms (for example spice, sandworm, ICE).
+- Not allowed: character names, quotes from the books, cover art, and **no text copied word for word from Wikipedia** (its text is CC BY-SA), Goodreads or other plot summaries.
+
+## 6. Pilot game: *Dune* (design sheet)
+
+Plot moments for the intro and flavour text: to be drafted from Wikipedia and approved by the author (5.1) before PR 2.
+
+- **Genre:** top-down survival, endless score run.
+- **Goal:** collect as much spice as possible before being caught.
+- **Core tension (greed vs noise):** moving fast makes noise, and noise draws the sandworm. Moving slowly is quiet and safe, but a storm (or timer) closes in, so you cannot just creep.
+- **Controls (touch):** floating joystick. Put a thumb down anywhere and drag; how far you drag sets speed, and speed is noise. **Keyboard on desktop:** arrow keys or WASD, with a key (for example Shift) to switch between walking and running.
+- **Lose:** the worm reaches you, or the storm catches you.
+- **Score:** spice collected. Best score kept locally (section 7).
+- **Difficulty:** rises over time (worm speed or sensitivity, storm pressure, spice spread). Exact curve tuned through playtests.
+- **Feedback on screen:** a visible noise meter, and clear signs of where the worm is heading.
+- **Art:** shapes on a sand palette in the spirit of the existing Dune theme, colour-blind safe (worm and danger must not rely on red vs green alone).
+- **Reduced motion:** no screen shake.
+
+## 7. Data and sync
+- Pilot: **best score per game in local storage only.** Nothing written to `users/<uid>`; the Firestore document and the data-integrity checks are unchanged.
+- Syncing results may be added later if the author cares about scores across devices.
+
+## 8. Phone requirements and performance
+- **Reference phone:** Motorola Edge 30 (installed Android PWA).
+- **Frame rate:** target 60 fps, never below 30 fps on the reference phone.
+- **Start time:** about 1 second from tapping Play. This is a soft target, not a hard requirement: report if it is far off, do not over-tune.
+- Touch only on the phone; keyboard also works on desktop.
+- Large touch targets for shell buttons.
+
+## 9. Test plan and process
+
+### 9.1 Automated (pytest-bdd + Playwright)
+- New feature file **`tests/features/13-games.feature`** for the shared shell: beta switch shows and hides Play, Play launches the game, canvas appears, pause and resume, auto-pause on tab hidden, Back to book returns to the book page, best score is kept after a run.
+- **Per-game smoke scenario** for *Dune* with a **fixed random seed**: loads, responds to input, can end a run, no console errors.
+- Existing smoke scenarios keep gating merges via CI.
+
+### 9.2 Manual playtest (author, on the phone)
+Checklist for each playtest build:
+- Starts quickly and plays smoothly.
+- Joystick feels right (no drift, speed easy to control).
+- The noise/worm rule is understandable without explanation.
+- A run lasts 2 to 5 minutes.
+- Pause, background and resume work; Back to book always reachable.
+- Portrait and landscape both usable.
+- Works offline after the first play.
+- Would you play again?
+
+Claude cannot judge fun or touch feel; that comes only from the author's playtests.
+
+### 9.3 Scope rule while building
+Nothing beyond the core loop (spice, noise, worm, storm, score) until the author has played it twice: no menus, levels, story screens or achievements.
+
+### 9.4 Feedback
+After playing, the author leaves short notes in a PR comment or in chat ("worm too fast", "joystick drifts"). Claude turns them into changes.
+
+## 10. Milestones and PR plan
+1. **PR 1 (this document):** spec with all decisions. Docs only.
+2. **PR 2:** engine copied into the repo (size measured), shared shell, registry, beta switch on the About page, Play button on the book page, rough playable *Dune* in plain shapes, `13-games.feature` and the *Dune* smoke test. Merged to `main` hidden behind the beta switch, so the author can play it in the real installed app.
+3. **PR 3 and later:** changes from phone playtests, until *Dune* passes or fails the success test (section 2).
+4. **Then:** if it passes, pick the second game (genre and plot moments per section 5), at most 3 in total. Once a game is approved, its status becomes `released`; when all approved, the beta switch is removed.
+
+GitHub Pages serves only `main`, so pull requests cannot be tried on the phone before merging; the beta switch is how unapproved games ship safely.
+
+## 11. Later candidates (not committed)
+- Other pilot ideas: *Neuromancer* (puzzle: route a signal through a grid of ICE nodes before a timer ends), *The Martian* (resource puzzle: plan potato plots and water on a small base grid), *The Forever War* (run and gun, time dilation changes the world between levels), *Hyperion* (quest with branching pilgrim stories).
+- Cheap extras: data-only quiz modes, daily random book, "guess the book from three clues".
+- Sound, synced scores, a Games tab, if games multiply.
+
+## 12. Risks
+| Risk | Mitigation |
+|---|---|
+| Wrong plot details | Wikipedia as reference, own wording, author approves before building (5.1) |
+| Scope creep | Cap of 3 games, one at a time, core-loop-only rule (9.3), stop rule (2) |
+| Not fun on a phone | Rough playable build early, author playtests, two rounds then stop |
+| Performance or battery on the phone | Delta-time movement, frame cap, engine size limit, reference phone |
+| Copyright | Original mechanics, wording and art; no names, quotes, covers or copied text (5.2) |
+| Engine heavier than expected | Measure before committing; LittleJS fallback |
+| Unfinished games visible to visitors | Beta switch, hidden by default |
+
+## 13. Constraints from the existing app
 - Static site on GitHub Pages, ES modules, no build step (`js/`, `css/`, `tools/bump.py` keeps the version consistent).
 - Installable Android PWA with a service worker (network first for same-origin files, cache fallback).
 - Tests: pytest-bdd with Playwright (`tests/`), smoke scenarios gate merges via CI.
-- Version bump with `python3 tools/bump.py` for every app change; new JS files must be listed in the precache (the script does this).
-
-## 5. Spec skeleton (fill in)
-1. Goals and non-goals
-2. Player experience and navigation (entry points, back, pause, results)
-3. Technical architecture (engine choice, game module interface, registry format, loading and caching)
-4. Content model (per-game fields: book id, title, genre, description, difficulty, status)
-5. Game design sheets, one per pilot game (goal, controls, rules, win and lose, levels, art and sound)
-6. Phone requirements and performance budget
-7. Data and sync (what, if anything, is stored)
-8. Test plan (BDD scenarios, manual playtest checklist)
-9. Milestones and PR plan
-10. Risks (accuracy of plot details, scope creep, performance, copyright)
+- Version bump with `python3 tools/bump.py` for every app change. The script precaches only top-level `css/*.css` and `js/*.js`, so files under `js/games/` and `js/vendor/` stay out of the precache by default, which matches 4.7. Keep any game-related module that sits directly in `js/` small, since every install downloads it.
