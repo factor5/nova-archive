@@ -13,7 +13,7 @@ A scratchpad for features to add later. Move items to "Done" when they ship.
 - Themes: Nova (dark), Paper (light), Terminal, Dune and Auto, with a theme picker (synced with your account)
 
 ## Games
-- **Book games**: small playable games based on winner books. Spec agreed (pilot: *Dune*, at most 3 games, hidden behind a beta switch until approved) in [`docs/games-spec.md`](docs/games-spec.md)
+- **Book games**: small playable games based on winner books. Pilot *Dune* (Spice Run) playable behind "Show games (beta)" on the About page; at most 3 games. Spec in [`docs/games-spec.md`](docs/games-spec.md)
 
 ## Themes
 - Per-theme accent colours, or a user-picked accent

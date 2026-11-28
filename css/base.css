@@ -225,3 +225,23 @@ table.aw td.wn,table.aw td.fn{white-space:nowrap}
 #abRes .mrow{margin:0;font-size:14px}
 #abRes small{color:var(--muted)}
 .abmsg{color:var(--amber);font-size:14px;margin:6px 0}
+/* Book games: panel on the book page, and the full-screen game layer (fixed sand palette, independent of the app theme). */
+.bgame h3{margin:0 0 6px}.bgame p{margin:6px 0 8px}.bgame .gname b{font-size:16px}.bgame .acts{align-items:center}
+html.game-open{overflow:hidden}
+.game{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;background:#2b1c10;color:#f6ead4;font-family:system-ui,sans-serif;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);height:100dvh}
+.gbar{display:flex;align-items:center;gap:8px;padding:6px 8px;min-height:48px;box-sizing:border-box}
+.gtitle{flex:1;font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gscore{display:flex;gap:10px;font-size:14px}.gscore b{font-variant-numeric:tabular-nums}
+.gbtn{font:inherit;font-weight:600;font-size:15px;min-height:44px;min-width:44px;padding:8px 14px;border-radius:10px;cursor:pointer;
+  color:#2b1c10;background:#f2c97f;border:2px solid #f6ead4}
+.gbtn.ghost{background:transparent;color:#f6ead4}
+.gbtn.big{font-size:18px;padding:12px 26px}
+.gbtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.gstage{position:relative;flex:1;min-height:0}
+#gCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none;-webkit-user-select:none;user-select:none}
+.gpanel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(340px,calc(100% - 32px));max-height:calc(100% - 24px);overflow:auto;box-sizing:border-box;
+  background:rgba(43,28,16,.94);border:2px solid #f2c97f;border-radius:14px;padding:18px;text-align:center}
+.gpanel[hidden]{display:none}
+.gpanel h2{margin:0 0 10px;font-size:22px}.gpanel p{margin:8px 0;font-size:15px;line-height:1.4}.gpanel .gbig{font-size:20px}
+.gacts{display:flex;flex-direction:column;gap:10px;margin-top:14px;align-items:stretch}

@@ -7,6 +7,7 @@ import {linkRow,stars,stateBtns} from './cards.js';
 import {touch} from './sync.js';
 import {updateCustom,deleteCustom} from './addbook.js';
 import {cached,fetchInfo,enrichOn,coverUrl,workUrl} from './enrich.js';
+import {gamePanel} from './games.js';
 const href=id=>'#book/'+encodeURIComponent(id);
 const link=(b,extra='')=>`<a class="bl" href="${esc(href(b.id))}" data-act="gobook" data-v="${esc(b.id)}">${esc(b.title)}</a>${extra}`;
 const mark=id=>S.read.has(id)?'<span class="mk ok" title="Read">✓</span>':S.reading[id]?'<span class="mk go" title="Reading now">▶</span>':'';
@@ -57,6 +58,7 @@ export function renderBookPage(){
       <div id="bookInfo" hidden></div>
       <div class="acts">${stateBtns(id)}<button class="btn sm ghost" data-act="addlist">＋ List${lists.length?' ('+lists.length+')':''}</button></div>
     </section>
+    ${gamePanel(id)}
     <div class="bcols">
       <section class="panel"><h3>My shelf</h3>
         <div class="bst">${esc(status)}</div>
